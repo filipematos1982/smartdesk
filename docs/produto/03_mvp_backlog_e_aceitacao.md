@@ -1,90 +1,90 @@
-# Passo 5 — MVP, backlog e critérios de aceitação
+# Step 5 — MVP, Backlog, and Acceptance Criteria
 
-**Estado:** Proposta aprovada.
+**Status:** Approved proposal.
 
-## 1. MVP proposto
+## 1. Proposed MVP
 
-O MVP SmartDesk permite demonstrar um percurso completo de suporte informático:
+The SmartDesk MVP demonstrates a complete IT support journey:
 
-1. **Ana** inicia sessão e cria um ticket de impressora na categoria **Equipamento** — estado **Aberto**.
-2. **Sofia** consulta o pedido e atribui-o a **Miguel** — estado **Aberto**.
-3. **Miguel** consulta o ticket e inicia o tratamento — estado **Em tratamento**.
-4. **Miguel** regista a solução — estado **Resolvido**.
-5. **Sofia** verifica e confirma a resolução e fecha o ticket, sem confirmação formal obrigatória de Ana — estado **Fechado**.
+1. **Ana** signs in and creates a printer ticket in the **Hardware** category — status **Open**.
+2. **Sofia** reviews the request and assigns it to **Miguel** — status **Open**.
+3. **Miguel** views the ticket and starts handling it — status **In Progress**.
+4. **Miguel** records the solution — status **Resolved**.
+5. **Sofia** verifies and confirms the resolution, then closes the ticket without requiring Ana's formal confirmation — status **Closed**.
 
-**Percurso alternativo:** se Ana comunicar que o problema persiste, um ticket **Resolvido** regressa a **Em tratamento**, mantendo o técnico responsável, salvo reatribuição por Sofia.
+**Alternative path:** If Ana reports that the issue persists, a **Resolved** ticket returns to **In Progress**, retaining the responsible technician unless Sofia reassigns it.
 
-O percurso é pequeno e demonstrável, mas cobre o ciclo de vida essencial do SmartDesk.
+This is a small, demonstrable workflow that covers the essential SmartDesk ticket lifecycle.
 
-## 2. Backlog por prioridade
+## 2. Prioritized Backlog
 
-- **P0 — Essencial:** necessário para demonstrar o percurso completo.
-- **P1 — Complementar:** necessário para cumprir o MVP aprovado, embora não seja indispensável à primeira demonstração.
-- **P2 — Posterior:** melhorias para depois da primeira versão demonstrável.
+- **P0 — Essential:** required to demonstrate the complete workflow.
+- **P1 — Complementary:** required to meet the approved MVP, although not essential to the first demonstration.
+- **P2 — Later:** improvements for after the first demonstrable version.
 
-| Prioridade | US | Funcionalidade | Decisão |
+| Priority | US | Functionality | Decision |
 |---|---|---|---|
-| P0 | US-001 | Autenticação por email e palavra-passe, com três perfis | MVP |
-| P0 | US-002 | Criar ticket com título, descrição e categoria | MVP |
-| P0 | US-003 | Ana consultar os seus tickets | MVP |
-| P0 | US-004 | Sofia atribuir tickets aos técnicos | MVP |
-| P0 | US-005 | Miguel consultar os tickets atribuídos | MVP |
-| P0 | US-006 | Miguel iniciar tratamento | MVP |
-| P0 | US-007 | Miguel registar resolução | MVP |
-| P0 | US-009 | Sofia acompanhar e fechar tickets | MVP |
-| P1 | US-008 | Ana comunicar problema persistente e devolver ticket a Em tratamento | MVP |
-| P1 | US-010 | Validação de campos obrigatórios e mensagens claras | MVP |
-| P1 | US-011 | Consulta de tickets com resposta até 3 segundos | MVP |
-| P1 | US-012 | Funcionamento no Chrome e Edge | MVP |
+| P0 | US-001 | Email and password authentication with three roles | MVP |
+| P0 | US-002 | Create a ticket with a title, description, and category | MVP |
+| P0 | US-003 | Ana views her tickets | MVP |
+| P0 | US-004 | Sofia assigns tickets to technicians | MVP |
+| P0 | US-005 | Miguel views assigned tickets | MVP |
+| P0 | US-006 | Miguel starts handling a ticket | MVP |
+| P0 | US-007 | Miguel records a resolution | MVP |
+| P0 | US-009 | Sofia tracks and closes tickets | MVP |
+| P1 | US-008 | Ana reports a persistent issue and returns the ticket to In Progress | MVP |
+| P1 | US-010 | Required-field validation and clear messages | MVP |
+| P1 | US-011 | Ticket pages respond within 3 seconds | MVP |
+| P1 | US-012 | Works in Chrome and Edge | MVP |
 
-**Nota:** A reatribuição de tickets prevista na US-004 faz parte do MVP, mesmo não sendo necessária ao percurso principal. P0 e P1 indicam a ordem de trabalho, não exclusões do MVP nem prioridades dos tickets. Não existe campo de prioridade por ticket no MVP.
+**Note:** Ticket reassignment in US-004 is part of the MVP, even though it is not required for the primary workflow. P0 and P1 indicate work order, not MVP exclusions or ticket priorities. The MVP has no ticket-priority field.
 
-## 3. Incluído no MVP e evolução posterior
+## 3. Included in the MVP and Later Evolution
 
-**Incluído:** autenticação; criação e consulta de tickets; atribuição e reatribuição; tratamento e resolução; regresso ao tratamento; supervisão e fecho; validações dos campos obrigatórios (título, descrição e categoria); permissões; compatibilidade Chrome/Edge; meta provisória de resposta até 3 segundos.
+**Included:** authentication; ticket creation and viewing; assignment and reassignment; handling and resolution; return to handling; oversight and closure; validation of required fields (title, description, and category); permissions; Chrome/Edge compatibility; provisional response-time target of up to 3 seconds.
 
-**Fora do MVP:** aplicação móvel, notificações SMS, integração automática com email, resolução automática por IA e gestão avançada de SLA. Estas funcionalidades não serão especificadas nem implementadas nesta fase.
+**Outside the MVP:** mobile application, SMS notifications, automatic email integration, automated AI-based resolution, and advanced SLA management. These features will not be specified or implemented in this phase.
 
-**Perfis:** colaborador (Ana Martins), técnico de suporte (Miguel Costa), responsável de TI (Sofia Almeida).
+**Roles:** employee (Ana Martins), support technician (Miguel Costa), IT manager (Sofia Almeida).
 
-**Categorias:** Equipamento, Software e Acessos.
+**Categories:** Hardware, Software, and Access.
 
-**Estados:** Aberto, Em tratamento, Resolvido e Fechado.
+**Statuses:** Open, In Progress, Resolved, and Closed.
 
-## 4. Critérios de aceitação em Gherkin
+## 4. Gherkin Acceptance Criteria
 
-O ficheiro [`features/tickets.feature`](../../features/tickets.feature) contém os **12 cenários principais**, um por User Story (US-001 a US-012), revistos para o MVP. A simplificação substitui os 16 cenários anteriores, mantendo os identificadores.
+The file [`features/tickets.feature`](../../features/tickets.feature) contains the **12 main scenarios**, one for each User Story (US-001 through US-012), revised for the MVP. This simplification replaces the previous 16 scenarios while retaining their identifiers.
 
-A reatribuição, o fecho exclusivo por Sofia e a proibição de reabrir tickets fechados continuam a ser regras obrigatórias, mesmo sem cenários negativos independentes nesta versão simplificada.
+Reassignment, closure exclusively by Sofia, and the prohibition on reopening closed tickets remain mandatory rules, even though this simplified version has no separate negative scenarios for them.
 
-## 5. Regras de negócio obrigatórias
+## 5. Mandatory Business Rules
 
-| Regra | Comportamento esperado |
+| Rule | Expected behavior |
 |---|---|
-| Perfis | Colaborador, técnico e responsável de TI têm permissões distintas. |
-| Categorias | Apenas Equipamento, Software e Acessos. |
-| Estados | Aberto, Em tratamento, Resolvido e Fechado. |
-| Reatribuição | Sofia pode reatribuir tickets, incluindo os que estão Em tratamento. |
-| Regresso ao tratamento | Ana pode devolver um ticket Resolvido a Em tratamento. |
-| Fecho | Apenas Sofia pode fechar um ticket Resolvido, após verificar a resolução, sem confirmação formal obrigatória de Ana. |
-| Ticket fechado | Não pode ser reaberto. |
+| Roles | Employees, technicians, and the IT manager have distinct permissions. |
+| Categories | Only Hardware, Software, and Access are allowed. |
+| Statuses | Open, In Progress, Resolved, and Closed. |
+| Reassignment | Sofia can reassign tickets, including those that are In Progress. |
+| Return to handling | Ana can return a Resolved ticket to In Progress. |
+| Closure | Only Sofia may close a Resolved ticket after verifying the resolution; Ana's formal confirmation is not required. |
+| Closed ticket | Cannot be reopened. |
 
-Estas regras devem continuar a ser verificadas na fase de testes.
+These rules must continue to be verified during testing.
 
-## 6. Critério de conclusão do MVP
+## 6. MVP Completion Criteria
 
-O MVP estará demonstrável quando:
+The MVP will be demonstrable when:
 
-- Ana conseguir iniciar sessão, criar um ticket e acompanhar o seu estado.
-- Sofia conseguir atribuir e reatribuir tickets.
-- Miguel conseguir consultar, tratar e resolver os tickets atribuídos.
-- Ana conseguir comunicar que uma resolução não funcionou.
-- Sofia conseguir supervisionar e fechar um ticket resolvido.
-- As permissões, categorias, estados e regras de transição forem respeitados.
-- Os critérios de usabilidade, desempenho e compatibilidade forem verificados.
+- Ana can sign in, create a ticket, and track its status.
+- Sofia can assign and reassign tickets.
+- Miguel can view, handle, and resolve assigned tickets.
+- Ana can report that a resolution did not work.
+- Sofia can oversee and close a resolved ticket.
+- Permissions, categories, statuses, and transition rules are respected.
+- Usability, performance, and compatibility criteria have been verified.
 
-**Nota:** O objetivo de até 3 segundos é provisório e requer medição em condições previamente definidas. A compatibilidade exige verificação no Chrome e no Edge.
+**Note:** The target of up to 3 seconds is provisional and requires measurement under previously defined conditions. Compatibility must be verified in Chrome and Edge.
 
-## 7. Rastreabilidade
+## 7. Traceability
 
-O MVP mantém as 12 User Stories e os requisitos RF-001 a RF-009 e RNF-001 a RNF-004 aprovados no [Passo 4](02_requisitos_e_user_stories.md). Cada cenário em `features/tickets.feature` identifica a sua User Story. Não foram acrescentadas novas personas nem funcionalidades.
+The MVP retains the 12 User Stories and requirements RF-001 through RF-009 and RNF-001 through RNF-004 approved in [Step 4](02_requisitos_e_user_stories.md). Each scenario in `features/tickets.feature` identifies its User Story. No new personas or functionality have been added.

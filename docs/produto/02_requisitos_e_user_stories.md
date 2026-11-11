@@ -1,81 +1,81 @@
-# Passo 4 — Requisitos, User Stories e critérios de aceitação
+# Step 4 — Requirements, User Stories, and Acceptance Criteria
 
-**Estado:** Versão 2 aprovada.
+**Status:** Version 2 approved.
 
-## 1. Requisitos funcionais (RF)
+## 1. Functional Requirements (RF)
 
-| ID | Requisito | Descrição |
+| ID | Requirement | Description |
 |---|---|---|
-| RF-001 | Autenticação | Acesso através de email e palavra-passe, com identificação do perfil. |
-| RF-002 | Criação de tickets | Registar os campos obrigatórios título, descrição e categoria: Equipamento, Software ou Acessos. |
-| RF-003 | Consulta de tickets | Colaborador consulta os seus tickets; técnico consulta os atribuídos; responsável consulta todos. |
-| RF-004 | Atribuição e reatribuição | Sofia atribui ou reatribui tickets, incluindo os que estão Em tratamento. |
-| RF-005 | Início do tratamento | Técnico responsável altera o estado de Aberto para Em tratamento. |
-| RF-006 | Resolução | Técnico regista a solução e altera o estado para Resolvido. |
-| RF-007 | Regresso ao tratamento | Colaborador comunica que o problema persiste; ticket passa de Resolvido para Em tratamento. |
-| RF-008 | Fecho | Apenas Sofia pode fechar tickets Resolvidos após verificar e confirmar a resolução, sem confirmação formal obrigatória do colaborador. Tickets Fechados não podem ser reabertos. |
-| RF-009 | Supervisão | Sofia consulta tickets, categorias, estados e técnicos responsáveis. |
+| RF-001 | Authentication | Access using email and password, with role identification. |
+| RF-002 | Ticket creation | Record the required title, description, and category fields: Hardware, Software, or Access. |
+| RF-003 | Ticket visibility | Employees can view their own tickets; technicians can view assigned tickets; the manager can view all tickets. |
+| RF-004 | Assignment and reassignment | Sofia can assign or reassign tickets, including tickets that are In Progress. |
+| RF-005 | Start handling | The responsible technician changes the status from Open to In Progress. |
+| RF-006 | Resolution | The technician records the solution and changes the status to Resolved. |
+| RF-007 | Return to handling | An employee reports that the issue persists; the ticket moves from Resolved to In Progress. |
+| RF-008 | Closure | Only Sofia may close Resolved tickets after verifying and confirming the resolution; the employee's formal confirmation is not required. Closed tickets cannot be reopened. |
+| RF-009 | Oversight | Sofia can view tickets, categories, statuses, and responsible technicians. |
 
-## 2. Requisitos não funcionais (RNF)
+## 2. Non-Functional Requirements (RNF)
 
-| ID | Requisito | Critério de verificação |
+| ID | Requirement | Verification criterion |
 |---|---|---|
-| RNF-001 | Usabilidade | O colaborador consegue criar um ticket sem conhecimentos técnicos, com campos e mensagens compreensíveis. |
-| RNF-002 | Desempenho | As páginas principais respondem em até 3 segundos, em condições normais de utilização. Meta provisória aprovada; as páginas e condições de medição serão documentadas antes da execução dos testes. |
-| RNF-003 | Segurança | Acesso autenticado e operações limitadas às permissões de cada perfil. |
-| RNF-004 | Compatibilidade | A aplicação funciona no Chrome e Edge, em computador. |
+| RNF-001 | Usability | An employee can create a ticket without technical knowledge, using clear fields and messages. |
+| RNF-002 | Performance | The main pages respond within 3 seconds under normal usage conditions. This is an approved provisional target; the pages and measurement conditions will be documented before testing. |
+| RNF-003 | Security | Access is authenticated, and operations are limited according to each role's permissions. |
+| RNF-004 | Compatibility | The application works in Chrome and Edge on a computer. |
 
 ## 3. User Stories (US)
 
-| ID | Persona | User Story | Requisitos |
+| ID | Persona | User Story | Requirements |
 |---|---|---|---|
-| US-001 | Ana | Como Ana, quero iniciar sessão com email e palavra-passe, para aceder aos meus pedidos em segurança. | RF-001, RNF-003 |
-| US-002 | Ana | Como Ana, quero criar um ticket, para comunicar um problema informático. | RF-002, RNF-001 |
-| US-003 | Ana | Como Ana, quero consultar os meus tickets, para acompanhar a resolução. | RF-003 |
-| US-004 | Sofia | Como Sofia, quero atribuir e reatribuir tickets, para distribuir o trabalho pelos técnicos. | RF-004, RNF-003 |
-| US-005 | Miguel | Como Miguel, quero consultar os tickets atribuídos, para organizar o meu trabalho. | RF-003 |
-| US-006 | Miguel | Como Miguel, quero iniciar o tratamento de um ticket, para indicar que estou a resolver o problema. | RF-005 |
-| US-007 | Miguel | Como Miguel, quero registar a solução e marcar o ticket como Resolvido, para documentar a intervenção. | RF-006 |
-| US-008 | Ana | Como Ana, quero comunicar que o problema persiste, para que o ticket regresse a Em tratamento. | RF-007 |
-| US-009 | Sofia | Como Sofia, quero acompanhar os tickets e fechar os resolvidos, para supervisionar o suporte. | RF-008, RF-009 |
-| US-010 | Ana | Como Ana, quero um formulário simples com indicação dos campos obrigatórios e mensagens de erro claras, para criar tickets corretamente. | RF-002, RNF-001 |
-| US-011 | Miguel | Como Miguel, quero consultar rapidamente os tickets atribuídos, para organizar o meu trabalho sem esperas desnecessárias. | RF-003, RNF-002 |
-| US-012 | Ana | Como Ana, quero utilizar o SmartDesk no Chrome e no Edge, para conseguir aceder e criar tickets no navegador disponível. | RF-001, RF-002, RNF-004 |
+| US-001 | Ana | As Ana, I want to sign in with my email and password so that I can access my requests securely. | RF-001, RNF-003 |
+| US-002 | Ana | As Ana, I want to create a ticket so that I can report an IT issue. | RF-002, RNF-001 |
+| US-003 | Ana | As Ana, I want to view my tickets so that I can track their resolution. | RF-003 |
+| US-004 | Sofia | As Sofia, I want to assign and reassign tickets so that I can distribute the work among technicians. | RF-004, RNF-003 |
+| US-005 | Miguel | As Miguel, I want to view the tickets assigned to me so that I can organize my work. | RF-003 |
+| US-006 | Miguel | As Miguel, I want to start handling a ticket so that I can indicate that I am resolving the issue. | RF-005 |
+| US-007 | Miguel | As Miguel, I want to record the solution and mark the ticket as Resolved so that I can document the intervention. | RF-006 |
+| US-008 | Ana | As Ana, I want to report that the issue persists so that the ticket returns to In Progress. | RF-007 |
+| US-009 | Sofia | As Sofia, I want to track tickets and close resolved ones so that I can oversee support. | RF-008, RF-009 |
+| US-010 | Ana | As Ana, I want a simple form that identifies required fields and displays clear error messages so that I can create tickets correctly. | RF-002, RNF-001 |
+| US-011 | Miguel | As Miguel, I want to view assigned tickets quickly so that I can organize my work without unnecessary delays. | RF-003, RNF-002 |
+| US-012 | Ana | As Ana, I want to use SmartDesk in Chrome and Edge so that I can access the application and create tickets in the available browser. | RF-001, RF-002, RNF-004 |
 
-As histórias US-010, US-011 e US-012 reforçam, respetivamente, usabilidade, desempenho e compatibilidade. A autenticação foi incluída para distinguir os três perfis. A reatribuição e o regresso ao tratamento decorrem da jornada aprovada. Não são introduzidas funcionalidades fora do MVP.
+US-010, US-011, and US-012 reinforce usability, performance, and compatibility, respectively. Authentication was included to distinguish the three roles. Reassignment and returning a ticket to handling follow the approved journey. No functionality outside the MVP is introduced.
 
-## 4. Critérios de aceitação em Gherkin
+## 4. Gherkin Acceptance Criteria
 
-Os cenários de aceitação aprovados estão no ficheiro [features/tickets.feature](../../features/tickets.feature). Cada cenário identifica a respetiva User Story.
+The approved acceptance scenarios are in [features/tickets.feature](../../features/tickets.feature). Each scenario identifies its corresponding User Story.
 
-## 5. Matriz de rastreabilidade
+## 5. Traceability Matrix
 
-| Requisito | User Stories relacionadas | Verificação |
+| Requirement | Related User Stories | Verification |
 |---|---|---|
-| RF-001 | US-001, US-012 | Autenticação e acesso |
-| RF-002 | US-002, US-010, US-012 | Criação e validação |
-| RF-003 | US-003, US-005, US-011 | Consulta de tickets |
-| RF-004 | US-004 | Atribuição e reatribuição |
-| RF-005 | US-006 | Início de tratamento |
-| RF-006 | US-007 | Registo da resolução |
-| RF-007 | US-008 | Regresso ao tratamento |
-| RF-008 | US-009 | Fecho e bloqueios |
-| RF-009 | US-009 | Supervisão |
-| RNF-001 | US-002, US-010 | Formulário e mensagens |
-| RNF-002 | US-011 | Tempo de resposta |
-| RNF-003 | US-001, US-004, US-009 | Autenticação e permissões |
-| RNF-004 | US-012 | Chrome e Edge |
+| RF-001 | US-001, US-012 | Authentication and access |
+| RF-002 | US-002, US-010, US-012 | Creation and validation |
+| RF-003 | US-003, US-005, US-011 | Ticket visibility |
+| RF-004 | US-004 | Assignment and reassignment |
+| RF-005 | US-006 | Start handling |
+| RF-006 | US-007 | Recording the resolution |
+| RF-007 | US-008 | Return to handling |
+| RF-008 | US-009 | Closure and restrictions |
+| RF-009 | US-009 | Oversight |
+| RNF-001 | US-002, US-010 | Form and messages |
+| RNF-002 | US-011 | Response time |
+| RNF-003 | US-001, US-004, US-009 | Authentication and permissions |
+| RNF-004 | US-012 | Chrome and Edge |
 
-**Cobertura de rastreabilidade:** 13/13 requisitos associados a pelo menos uma User Story; 12/12 User Stories associadas a requisitos e com pelo menos um cenário Gherkin. A rastreabilidade não demonstra, por si só, cobertura integral de testes.
+**Traceability coverage:** 13/13 requirements are associated with at least one User Story; 12/12 User Stories are associated with requirements and have at least one Gherkin scenario. Traceability alone does not demonstrate complete test coverage.
 
-O cenário US-011 requer medição de tempo em condições de utilização previamente definidas. O US-012 requer execução nos dois navegadores. Os restantes cenários incluem verificações funcionais e de permissões.
+US-011 requires response-time measurements under previously defined usage conditions. US-012 requires execution in both browsers. The remaining scenarios include functional and permission checks.
 
-## 6. Decisões confirmadas
+## 6. Confirmed Decisions
 
-1. Autenticação por **email e palavra-passe**.
-2. Ana pode comunicar que o problema persiste e devolver um ticket de **Resolvido** a **Em tratamento**.
-3. Apenas Sofia pode fechar tickets **Resolvidos**, após verificar a resolução, sem confirmação formal obrigatória de Ana.
-4. Meta provisória de resposta das páginas principais: **até 3 segundos**, com condições de medição a documentar antes dos testes.
-5. **Título, descrição e categoria** são obrigatórios na criação de tickets.
+1. Authentication uses **email and password**.
+2. Ana can report that an issue persists and return a **Resolved** ticket to **In Progress**.
+3. Only Sofia may close **Resolved** tickets after verifying the resolution; Ana's formal confirmation is not required.
+4. The provisional response-time target for the main pages is **within 3 seconds**, with measurement conditions to be documented before testing.
+5. **Title, description, and category** are required when creating tickets.
 
-**Âmbito preservado:** perfis colaborador, técnico de suporte e responsável de TI; categorias Equipamento, Software e Acessos; estados Aberto, Em tratamento, Resolvido e Fechado. Fora do MVP: aplicação móvel, SMS, resolução automática por IA, integração de email e SLA complexo.
+**Scope preserved:** employee, support technician, and IT manager roles; Hardware, Software, and Access categories; Open, In Progress, Resolved, and Closed statuses. Outside the MVP: mobile application, SMS, automated AI-based resolution, email integration, and complex SLA management.

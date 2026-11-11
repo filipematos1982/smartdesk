@@ -1,66 +1,66 @@
-# Passo 2 — Stakeholders e Personas do SmartDesk
+# Step 2 — SmartDesk Stakeholders and Personas
 
-**Objetivo:** Identificar os três utilizadores principais do SmartDesk, compreender as suas dificuldades e determinar as funcionalidades necessárias.
+**Objective:** Identify SmartDesk's three primary users, understand their challenges, and determine the required functionality.
 
-## 1. Ana Martins — Colaboradora
+## 1. Ana Martins — Employee
 
-- **Idade:** 32 anos
-- **Função:** Assistente administrativa
-- **Contexto:** Trabalha na área administrativa da NexaServ e necessita de apoio informático para realizar as suas tarefas.
+- **Age:** 32
+- **Role:** Administrative Assistant
+- **Context:** Works in NexaServ's administration department and needs IT support to perform her duties.
 
-**Objetivo:** Comunicar problemas informáticos e acompanhar a sua resolução sem ter de contactar repetidamente a equipa de TI.
+**Objective:** Report IT issues and track their resolution without having to contact the IT team repeatedly.
 
-**Dificuldades atuais:**
-- Não sabe se o seu pedido foi recebido e registado.
-- Tem dificuldade em saber quando o problema estará resolvido.
+**Current challenges:**
+- She does not know whether her request has been received and recorded.
+- She finds it difficult to know when the issue will be resolved.
 
-**Necessidades na aplicação:**
-1. Criar tickets com descrição do problema e categoria.
-2. Consultar os seus pedidos e respetivos estados.
-3. Consultar a informação sobre a resolução.
+**Application needs:**
+1. Create tickets with an issue description and category.
+2. View her requests and their statuses.
+3. View information about the resolution.
 
-## 2. Miguel Costa — Técnico de suporte
+## 2. Miguel Costa — Support Technician
 
-- **Idade:** 29 anos
-- **Função:** Técnico de suporte
-- **Contexto:** Integra a equipa de três técnicos de TI da NexaServ e resolve problemas informáticos comunicados pelos colaboradores.
+- **Age:** 29
+- **Role:** Support Technician
+- **Context:** Is part of NexaServ's three-person IT team and resolves IT issues reported by employees.
 
-**Objetivo:** Organizar os pedidos atribuídos e acompanhar o trabalho até à resolução.
+**Objective:** Organize assigned requests and track the work through resolution.
 
-**Dificuldades atuais:**
-- Os pedidos estão dispersos por emails e mensagens.
-- Nem sempre é claro quais os pedidos que lhe foram atribuídos.
+**Current challenges:**
+- Requests are spread across email and messages.
+- It is not always clear which requests have been assigned to him.
 
-**Necessidades na aplicação:**
-1. Consultar os tickets que lhe estão atribuídos.
-2. Atualizar o estado dos tickets durante o tratamento.
-3. Registar a resolução e marcar os tickets como resolvidos.
+**Application needs:**
+1. View the tickets assigned to him.
+2. Update ticket statuses while handling them.
+3. Record the resolution and mark tickets as resolved.
 
-## 3. Sofia Almeida — Responsável de TI
+## 3. Sofia Almeida — IT Manager
 
-- **Idade:** 43 anos
-- **Função:** Responsável de TI
-- **Contexto:** Coordena os três técnicos de suporte e supervisiona os pedidos informáticos dos colaboradores da NexaServ.
+- **Age:** 43
+- **Role:** IT Manager
+- **Context:** Coordinates the three support technicians and oversees IT requests from NexaServ employees.
 
-**Objetivo:** Garantir que os pedidos são atribuídos, acompanhados e resolvidos de forma organizada.
+**Objective:** Ensure that requests are assigned, tracked, and resolved in an organized manner.
 
-**Dificuldades atuais:**
-- Não dispõe de uma visão centralizada do trabalho da equipa.
-- Tem dificuldade em acompanhar as atribuições e os pedidos pendentes.
+**Current challenges:**
+- She does not have a centralized view of the team's work.
+- She finds it difficult to track assignments and pending requests.
 
-**Necessidades na aplicação:**
-1. Consultar todos os tickets e respetivos estados.
-2. Atribuir e reatribuir tickets aos técnicos.
-3. Acompanhar as resoluções e gerir o fecho dos tickets.
+**Application needs:**
+1. View all tickets and their statuses.
+2. Assign and reassign tickets to technicians.
+3. Track resolutions and manage ticket closure.
 
-## 4. Relação entre personas e funcionalidades
+## 4. Relationship Between Personas and Functionality
 
-| Persona | Funcionalidades necessárias |
+| Persona | Required functionality |
 |---|---|
-| **Ana Martins** — Colaboradora | Criar tickets; consultar os próprios tickets; acompanhar estados e resoluções. |
-| **Miguel Costa** — Técnico de suporte | Consultar tickets atribuídos; atualizar estados; registar resoluções. |
-| **Sofia Almeida** — Responsável de TI | Consultar todos os tickets; atribuir e reatribuir técnicos; supervisionar resoluções e gerir fechos. |
+| **Ana Martins** — Employee | Create tickets; view her own tickets; track statuses and resolutions. |
+| **Miguel Costa** — Support Technician | View assigned tickets; update statuses; record resolutions. |
+| **Sofia Almeida** — IT Manager | View all tickets; assign and reassign technicians; oversee resolutions and manage closures. |
 
-## 5. Pontos para decisões posteriores
+## 5. Items for Later Decisions
 
-As personas permitem identificar necessidades, mas ainda será necessário detalhar as regras de permissões, a informação obrigatória dos tickets e as condições para alterar os seus estados. Essas decisões serão tratadas nas etapas de requisitos.
+The personas help identify user needs, but permission rules, required ticket information, and the conditions for changing ticket statuses still need to be detailed. These decisions will be addressed during the requirements stages.

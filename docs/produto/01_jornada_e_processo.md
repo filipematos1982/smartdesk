@@ -1,59 +1,59 @@
-# Passo 3 — Jornada do utilizador e processo de tickets
+# Step 3 — User Journey and Ticket Process
 
-**Objetivo:** Descrever o percurso de um pedido de suporte informático, desde a comunicação do problema até ao fecho do ticket.
+**Objective:** Describe the journey of an IT support request, from reporting the issue through ticket closure.
 
-## 1. Sequência narrativa — Problema de impressora
+## 1. Narrative Sequence — Printer Issue
 
-| Etapa | Responsável | Ação | Estado do ticket |
+| Step | Owner | Action | Ticket status |
 |---|---|---|---|
-| 1 | **Ana Martins** | A impressora não funciona. Ana acede ao SmartDesk e cria um ticket na categoria Equipamento, descrevendo o problema. | Aberto |
-| 2 | **Sofia Almeida** | Consulta os pedidos pendentes e atribui o ticket a Miguel, tendo em conta a distribuição do trabalho. | Aberto |
-| 3 | **Miguel Costa** | Consulta o ticket atribuído e inicia a análise do problema. | Em tratamento |
-| 4 | **Miguel Costa** | Verifica a impressora, identifica a causa e realiza a intervenção necessária. | Em tratamento |
-| 5 | **Miguel Costa** | Regista a solução aplicada e assinala o ticket como resolvido. | Resolvido |
-| 6 | **Ana Martins** | Pode consultar a resolução e comunicar se o problema persistir; não é exigida confirmação formal para o fecho. | Resolvido |
-| 7 | **Sofia Almeida** | Verifica e confirma a resolução e fecha o ticket, sem exigir confirmação formal de Ana. | Fechado |
+| 1 | **Ana Martins** | The printer is not working. Ana accesses SmartDesk and creates a ticket in the Hardware category, describing the issue. | Open |
+| 2 | **Sofia Almeida** | Reviews pending requests and assigns the ticket to Miguel, taking the team's workload into account. | Open |
+| 3 | **Miguel Costa** | Views the assigned ticket and begins investigating the issue. | In Progress |
+| 4 | **Miguel Costa** | Inspects the printer, identifies the cause, and performs the required intervention. | In Progress |
+| 5 | **Miguel Costa** | Records the solution applied and marks the ticket as resolved. | Resolved |
+| 6 | **Ana Martins** | Can review the resolution and report if the issue persists; formal confirmation is not required for closure. | Resolved |
+| 7 | **Sofia Almeida** | Verifies and confirms the resolution, then closes the ticket without requiring Ana's formal confirmation. | Closed |
 
-## 2. Principais decisões do processo
+## 2. Key Process Decisions
 
-- **Quem trata o pedido?** Sofia atribui o ticket a um técnico e pode reatribuí-lo se necessário.
-- **O problema foi resolvido?** Se não, Miguel continua o tratamento.
-- **A resolução funcionou?** Se Ana indicar que o problema persiste, o ticket regressa de Resolvido a Em tratamento.
-- **O ticket pode ser fechado?** Sofia verifica e confirma a resolução antes de o fechar, sem exigir confirmação formal de Ana.
-- **Um ticket fechado pode ser reaberto?** Não. Um novo problema exige um novo ticket.
+- **Who handles the request?** Sofia assigns the ticket to a technician and may reassign it if needed.
+- **Was the issue resolved?** If not, Miguel continues handling it.
+- **Did the resolution work?** If Ana reports that the issue persists, the ticket moves from Resolved back to In Progress.
+- **Can the ticket be closed?** Sofia verifies and confirms the resolution before closing it; Ana's formal confirmation is not required.
+- **Can a closed ticket be reopened?** No. A new issue requires a new ticket.
 
-## 3. Fluxograma ASCII — Jornada do ticket
+## 3. ASCII Flowchart — Ticket Journey
 
 ```text
-ANA cria ticket — ABERTO
+ANA creates ticket — OPEN
         |
         v
-SOFIA atribui a Miguel — ABERTO
+SOFIA assigns to Miguel — OPEN
         |
         v
-MIGUEL inicia tratamento — EM TRATAMENTO
+MIGUEL starts handling — IN PROGRESS
         |
         v
-  Problema resolvido?
-      | NÃO                  SIM
+  Issue resolved?
+      | NO                   YES
       |                       |
       |                       v
-      |             MIGUEL regista solução — RESOLVIDO
+      |             MIGUEL records solution — RESOLVED
       |                       |
       |                       v
-      |               Resolução mantém-se?
-      |                 | NÃO         SIM
+      |               Does the resolution hold?
+      |                 | NO          YES
       |                 |             |
-      |       ANA comunica problema   SOFIA verifica e confirma
+      |       ANA reports issue       SOFIA verifies and confirms
       |                 |             |
       |                 v             v
-      +-------> EM TRATAMENTO     SOFIA fecha — FECHADO
+      +-------> IN PROGRESS       SOFIA closes — CLOSED
                        |
-                       +----> MIGUEL retoma tratamento
+                       +----> MIGUEL resumes handling
 ```
 
-Se o problema não estiver resolvido, mantém-se **Em tratamento**. Se Ana comunicar que persiste após a resolução, o ticket regressa a **Em tratamento**, mantendo o técnico responsável. Sofia pode reatribuir em **Aberto** ou **Em tratamento**, sem alterar automaticamente o estado. Só Sofia fecha após verificar a resolução, sem exigir confirmação formal de Ana. Um ticket **Fechado** não pode ser reaberto.
+If the issue is not resolved, it remains **In Progress**. If Ana reports that it persists after resolution, the ticket returns to **In Progress**, retaining the responsible technician. Sofia may reassign a ticket in **Open** or **In Progress** without changing its status automatically. Only Sofia closes a ticket after verifying the resolution; Ana's formal confirmation is not required. A **Closed** ticket cannot be reopened.
 
-## 4. Resultado esperado
+## 4. Expected Outcome
 
-No final, o SmartDesk permite saber quem comunicou o problema, quem ficou responsável pelo tratamento, qual a solução aplicada e em que estado se encontra o pedido.
+SmartDesk makes it possible to see who reported the issue, who is responsible for handling it, what solution was applied, and the request's current status.

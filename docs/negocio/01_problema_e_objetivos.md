@@ -1,54 +1,54 @@
-# Passo 1 — Problema de negócio e objetivos do SmartDesk
+# Step 1 — SmartDesk Business Problem and Objectives
 
-## 1. Problema de negócio
+## 1. Business Problem
 
-A NexaServ é uma empresa de consultoria e serviços tecnológicos com 60 colaboradores, distribuídos entre a sede e o trabalho remoto.
+NexaServ is a consulting and technology services company with 60 employees, distributed between its headquarters and remote work.
 
-Atualmente, os pedidos de suporte informático são comunicados por email, telefone ou mensagens. A equipa de TI, constituída por três técnicos e uma responsável, utiliza uma caixa de correio partilhada e uma folha de cálculo para gerir os pedidos.
+Currently, IT support requests are submitted by email, phone, or messaging. The IT team, consisting of three technicians and one manager, uses a shared mailbox and a spreadsheet to manage requests.
 
-Este processo apresenta três problemas principais:
+This process has three main problems:
 
-- Alguns pedidos perdem-se ou não ficam devidamente registados.
-- Nem sempre é claro quem é responsável por cada pedido.
-- É difícil acompanhar o estado e a resolução dos problemas.
+- Some requests are lost or are not properly recorded.
+- It is not always clear who is responsible for each request.
+- It is difficult to track the status and resolution of issues.
 
-## 2. Objetivos do projeto
+## 2. Project Objectives
 
-O SmartDesk pretende centralizar e organizar os pedidos de suporte informático numa única aplicação web interna.
+SmartDesk aims to centralize and organize IT support requests in a single internal web application.
 
-Os principais objetivos são:
+The main objectives are:
 
-1. Garantir que todos os pedidos ficam registados.
-2. Permitir a atribuição de tickets aos técnicos.
-3. Acompanhar cada pedido desde a abertura até ao fecho.
-4. Facilitar a comunicação entre colaboradores e equipa de TI.
-5. Melhorar a organização e a supervisão do trabalho de suporte.
+1. Ensure that all requests are recorded.
+2. Enable tickets to be assigned to technicians.
+3. Track each request from submission through closure.
+4. Facilitate communication between employees and the IT team.
+5. Improve the organization and oversight of support work.
 
-## 3. Melhorias esperadas
+## 3. Expected Improvements
 
-| Situação atual | Melhoria pretendida |
+| Current situation | Intended improvement |
 |---|---|
-| Pedidos dispersos por vários canais | Pedidos centralizados no SmartDesk |
-| Risco de perda de pedidos | Registo organizado dos tickets |
-| Responsabilidades pouco claras | Técnico responsável identificado |
-| Dificuldade em acompanhar pedidos | Estados visíveis e atualizados |
-| Supervisão através de folha de cálculo | Acompanhamento centralizado pela responsável de TI |
+| Requests are spread across multiple channels | Requests are centralized in SmartDesk |
+| Risk of losing requests | Tickets are recorded in an organized manner |
+| Unclear responsibilities | The responsible technician is identified |
+| Difficulty tracking requests | Statuses are visible and up to date |
+| Oversight through a spreadsheet | Centralized oversight by the IT manager |
 
-## 4. Limites da primeira versão (MVP)
+## 4. First-Version Scope (MVP)
 
-A primeira versão incluirá a gestão de tickets nas categorias Equipamento, Software e Acessos.
+The first version will include ticket management for the Hardware, Software, and Access categories.
 
-O percurso será: **Aberto → Em tratamento → Resolvido → Fechado**, permitindo criar, atribuir, tratar, resolver e fechar tickets.
+The workflow will be: **Open → In Progress → Resolved → Closed**, supporting ticket creation, assignment, handling, resolution, and closure.
 
-Existirão três perfis: colaborador, técnico de suporte e responsável de TI.
+There will be three roles: employee, support technician, and IT manager.
 
-Ficam excluídos do MVP a aplicação móvel, notificações SMS, resolução automática com inteligência artificial, integração com email e gestão complexa de SLA (prazos de serviço).
+The MVP excludes a mobile application, SMS notifications, automated AI-based resolution, email integration, and complex SLA (service-level deadline) management.
 
-## 5. Decisões consolidadas
+## 5. Confirmed Decisions
 
-- **Consulta:** colaborador vê apenas os próprios tickets; técnico vê os atribuídos; Sofia vê todos (RF-003).
-- **Fecho:** apenas Sofia fecha tickets Resolvidos após verificar a resolução; não se exige confirmação formal de Ana (RF-008).
-- **Campos obrigatórios:** título, descrição e categoria (RF-002).
-- **Prioridades:** P0/P1 organizam o desenvolvimento; não há prioridade atribuída aos tickets no MVP.
+- **Ticket visibility:** employees see only their own tickets; technicians see tickets assigned to them; Sofia sees all tickets (RF-003).
+- **Closure:** only Sofia may close Resolved tickets after verifying the resolution; Ana's formal confirmation is not required (RF-008).
+- **Required fields:** title, description, and category (RF-002).
+- **Priorities:** P0/P1 organize development; tickets are not assigned a priority in the MVP.
 
-**Pendente de concretização operacional:** condições de medição do objetivo provisório de três segundos (RNF-002). Ver [requisitos](../produto/02_requisitos_e_user_stories.md) e [MVP](../produto/03_mvp_backlog_e_aceitacao.md).
+**Pending operational definition:** measurement conditions for the provisional three-second target (RNF-002). See [requirements](../produto/02_requisitos_e_user_stories.md) and [MVP](../produto/03_mvp_backlog_e_aceitacao.md).
