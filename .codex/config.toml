@@ -1,0 +1,9 @@
+# Safe initial defaults for the parent session and its specialist agents.
+sandbox_mode = "read-only"
+approval_policy = "on-request"
+approvals_reviewer = "user"
+
+[agents]
+enabled = true
+# This excludes the coordinator and applies to this session only.
+max_concurrent_threads_per_session = 1
