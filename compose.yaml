@@ -1,13 +1,11 @@
-# SmartDesk local: aplicação e PostgreSQL, sem exposição da base de dados.
+# Local SmartDesk only. PostgreSQL is not published on the host.
 services:
   db:
     image: postgres:16-alpine
-    env_file:
-      - .env
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:?Defina POSTGRES_DB no .env}
-      POSTGRES_USER: ${POSTGRES_USER:?Defina POSTGRES_USER no .env}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Defina POSTGRES_PASSWORD no .env}
+      POSTGRES_DB: ${POSTGRES_DB:?Set POSTGRES_DB in the local environment}
+      POSTGRES_USER: ${POSTGRES_USER:?Set POSTGRES_USER in the local environment}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in the local environment}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -18,18 +16,40 @@ services:
     restart: unless-stopped
 
   web:
+    image: ${SMARTDESK_IMAGE:-smartdesk:local}
     build: .
-    env_file:
-      - .env
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:?}:${POSTGRES_PASSWORD:?}@db:5432/${POSTGRES_DB:?}
+      POSTGRES_HOST: db
+      POSTGRES_PORT: "5432"
+      POSTGRES_DB: ${POSTGRES_DB:?Set POSTGRES_DB in the local environment}
+      POSTGRES_USER: ${POSTGRES_USER:?Set POSTGRES_USER in the local environment}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in the local environment}
+      SMARTDESK_DB_CONNECT_TIMEOUT: ${SMARTDESK_DB_CONNECT_TIMEOUT:-5}
+      SMARTDESK_SESSION_SECRET: ${SMARTDESK_SESSION_SECRET:?Set a unique local session secret}
+      SMARTDESK_COOKIE_SECURE: ${SMARTDESK_COOKIE_SECURE:-true}
+      SMARTDESK_SESSION_MAX_AGE: ${SMARTDESK_SESSION_MAX_AGE:-3600}
+      SMARTDESK_SEED_DEMO_USERS: "0"
     depends_on:
       db:
         condition: service_healthy
     ports:
-      - "127.0.0.1:8080:8000"
+      - "127.0.0.1:${SMARTDESK_HTTP_PORT:-8080}:8000"
     volumes:
       - ./reports:/app/reports
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      # This existing route is available only after database startup succeeds.
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/login', timeout=3).close()"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 15s
     restart: unless-stopped
 
 volumes:

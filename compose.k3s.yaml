@@ -1,16 +1,38 @@
+# Dedicated local training cluster only; never use an existing cluster context.
+name: ${SMARTDESK_LAB_PROJECT:?Set a new unique local lab project name}
 services:
   k3s:
-    image: rancher/k3s:v1.31.5-k3s1
-    container_name: smartlearning-k3s
+    image: rancher/k3s:v1.35.1-k3s1
+    # A nested node needs privilege; keep this local training cluster isolated.
     privileged: true
-    command: server --disable=traefik --disable=servicelb --write-kubeconfig-mode=644
+    command:
+      - server
+      - --disable=traefik
+      - --disable=servicelb
+      - --disable=metrics-server
+      - --write-kubeconfig-mode=600
+      - --node-name=${SMARTDESK_LAB_NODE:?Set a new unique local lab node name}
     ports:
-      - "127.0.0.1:8088:8088"  # Nginx
-      - "127.0.0.1:8089:8089"  # SmartDesk (Notebook 09)
-      - "127.0.0.1:8090:8090"  # Headlamp (painel Kubernetes)
+      # NodePorts inside the new node; the Kubernetes API is not published.
+      - "127.0.0.1:${SMARTDESK_LAB_HTTP_PORT:-8089}:30080"
+      - "127.0.0.1:${SMARTDESK_LAB_HEADLAMP_PORT:-8090}:30090"
     volumes:
       - k3s-server:/var/lib/rancher/k3s
-      - ./headlamp-lab.yaml:/lab/headlamp-lab.yaml:ro
-    restart: unless-stopped
+      - k3s-cni:/var/lib/cni
+      - k3s-kubelet:/var/lib/kubelet
+      - k3s-logs:/var/log
+    tmpfs:
+      - /run
+      - /var/run
+    healthcheck:
+      test: ["CMD", "kubectl", "--kubeconfig=/etc/rancher/k3s/k3s.yaml", "get", "--raw=/readyz"]
+      interval: 10s
+      timeout: 5s
+      retries: 18
+      start_period: 30s
+    restart: "no"
 volumes:
   k3s-server:
+  k3s-cni:
+  k3s-kubelet:
+  k3s-logs:

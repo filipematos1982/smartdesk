@@ -1,71 +1,125 @@
-# Headlamp: interface de observação local, com permissões de leitura.
+# Apply only to the new dedicated local cluster after its namespace exists.
+# The server identity does not authorize users. Login requires a short-lived
+# headlamp-viewer token; never enable automatic service-account-token login.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: headlamp-server
+  namespace: smartdesk-lab
+---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: headlamp-viewer
-  namespace: kube-system
+  namespace: smartdesk-lab
+automountServiceAccountToken: false
 ---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: headlamp-workload-viewer
+  namespace: smartdesk-lab
+rules:
+  - apiGroups: [""]
+    resources: [pods, services, events, persistentvolumeclaims, endpoints]
+    verbs: [get, list, watch]
+  - apiGroups: [apps]
+    resources: [deployments, replicasets, statefulsets, daemonsets]
+    verbs: [get, list, watch]
+  - apiGroups: [batch]
+    resources: [jobs, cronjobs]
+    verbs: [get, list, watch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: headlamp-workload-viewer
+  namespace: smartdesk-lab
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: headlamp-workload-viewer
+subjects:
+  - kind: ServiceAccount
+    name: headlamp-viewer
+    namespace: smartdesk-lab
+---
+# UI discovery only: no Secrets, pod logs, exec, or resource modification.
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: headlamp-lab-readonly
+  name: smartdesk-headlamp-discovery
 rules:
   - apiGroups: [""]
-    resources: ["nodes", "pods", "pods/log", "services", "namespaces", "events", "persistentvolumeclaims", "persistentvolumes", "configmaps", "endpoints"]
-    verbs: ["get", "list", "watch"]
-  - apiGroups: ["apps"]
-    resources: ["deployments", "replicasets", "daemonsets", "statefulsets"]
-    verbs: ["get", "list", "watch"]
-  - apiGroups: ["batch"]
-    resources: ["jobs", "cronjobs"]
-    verbs: ["get", "list", "watch"]
-  - apiGroups: ["metrics.k8s.io"]
-    resources: ["nodes", "pods"]
-    verbs: ["get", "list"]
+    resources: [nodes, namespaces]
+    verbs: [get, list, watch]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: headlamp-lab-readonly
+  name: smartdesk-headlamp-discovery
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: headlamp-lab-readonly
+  name: smartdesk-headlamp-discovery
 subjects:
   - kind: ServiceAccount
     name: headlamp-viewer
-    namespace: kube-system
+    namespace: smartdesk-lab
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: headlamp
-  namespace: kube-system
+  namespace: smartdesk-lab
 spec:
   replicas: 1
   selector:
-    matchLabels:
-      app: headlamp
+    matchLabels: {app: headlamp}
   template:
     metadata:
-      labels:
-        app: headlamp
+      labels: {app: headlamp}
     spec:
+      serviceAccountName: headlamp-server
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile: {type: RuntimeDefault}
       containers:
         - name: headlamp
-          image: ghcr.io/headlamp-k8s/headlamp:latest
-          args: ["-in-cluster"]
+          image: ghcr.io/headlamp-k8s/headlamp:v0.46.0
+          args: [-in-cluster]
           ports:
-            - containerPort: 4466
+            - {name: http, containerPort: 4466}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: {drop: [ALL]}
+          resources:
+            requests: {cpu: 100m, memory: 128Mi}
+            limits: {cpu: 500m, memory: 256Mi}
+          readinessProbe:
+            httpGet: {path: /, port: http}
+            initialDelaySeconds: 5
+          livenessProbe:
+            httpGet: {path: /, port: http}
+            initialDelaySeconds: 20
+          volumeMounts:
+            - {name: config, mountPath: /home/headlamp/.config}
+            - {name: tmp, mountPath: /tmp}
+      volumes:
+        - {name: config, emptyDir: {}}
+        - {name: tmp, emptyDir: {}}
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: headlamp
-  namespace: kube-system
+  namespace: smartdesk-lab
 spec:
-  selector:
-    app: headlamp
+  type: NodePort
+  selector: {app: headlamp}
   ports:
-    - port: 80
-      targetPort: 4466
+    - {name: http, port: 80, targetPort: http, nodePort: 30090}

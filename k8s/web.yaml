@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smartdesk
+  namespace: smartdesk-lab
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: smartdesk}
+  template:
+    metadata:
+      labels: {app: smartdesk}
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: web
+          # Import a newly built local image into this dedicated cluster first.
+          image: smartdesk:session3-local
+          imagePullPolicy: Never
+          ports:
+            - {name: http, containerPort: 8000}
+          env:
+            - {name: POSTGRES_HOST, value: postgres}
+            - {name: POSTGRES_PORT, value: "5432"}
+            - {name: SMARTDESK_DB_CONNECT_TIMEOUT, value: "5"}
+            # Local loopback HTTP only; use secure cookies with HTTPS elsewhere.
+            - {name: SMARTDESK_COOKIE_SECURE, value: "false"}
+            - {name: SMARTDESK_SESSION_MAX_AGE, value: "3600"}
+            - {name: SMARTDESK_SEED_DEMO_USERS, value: "0"}
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef: {name: smartdesk-local, key: POSTGRES_DB}
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef: {name: smartdesk-local, key: POSTGRES_USER}
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef: {name: smartdesk-local, key: POSTGRES_PASSWORD}
+            - name: SMARTDESK_SESSION_SECRET
+              valueFrom:
+                secretKeyRef: {name: smartdesk-local, key: SMARTDESK_SESSION_SECRET}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: {drop: [ALL]}
+          resources:
+            requests: {cpu: 100m, memory: 128Mi}
+            limits: {cpu: 500m, memory: 256Mi}
+          startupProbe:
+            httpGet: {path: /login, port: http}
+            failureThreshold: 60
+            periodSeconds: 2
+          readinessProbe:
+            httpGet: {path: /login, port: http}
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: {path: /login, port: http}
+            periodSeconds: 10
+          volumeMounts:
+            - {name: tmp, mountPath: /tmp}
+            - {name: reports, mountPath: /app/reports}
+      volumes:
+        - {name: tmp, emptyDir: {}}
+        - {name: reports, emptyDir: {}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: smartdesk
+  namespace: smartdesk-lab
+spec:
+  type: NodePort
+  selector: {app: smartdesk}
+  ports:
+    - {name: http, port: 8000, targetPort: http, nodePort: 30080}

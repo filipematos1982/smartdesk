@@ -55,6 +55,21 @@ def create(db, user, title, description, category):
     db.commit()
     return get(db, cursor.lastrowid)
 
+def guarded_update(db, statement, params):
+    """Apply validation predicates again atomically at the write boundary.
+
+    PostgreSQL rechecks UPDATE predicates after a concurrent writer commits.
+    RETURNING captures this operation's result before another transaction changes it.
+    """
+    row = db.execute(statement + " RETURNING *", params).fetchone()
+    if row is None:
+        db.rollback()
+        error("The ticket changed concurrently. Reload it and try again.", 409)
+    ticket = dict(row)
+    db.commit()
+    return ticket
+
+
 def assign(db, user, ticket_id, technician_id):
     require(user, "responsavel")
     ticket = get(db, ticket_id)
@@ -63,9 +78,10 @@ def assign(db, user, ticket_id, technician_id):
     row = db.execute("SELECT role FROM users WHERE id=?", (technician_id,)).fetchone()
     if not row or row["role"] != "technician":
         error("Selecione um technician válido.")
-    db.execute("UPDATE tickets SET technician_id=? WHERE id=?", (technician_id, ticket_id))
-    db.commit()
-    return get(db, ticket_id)
+    return guarded_update(db,
+        "UPDATE tickets SET technician_id=? WHERE id=? AND state=? "
+        "AND (technician_id=? OR (technician_id IS NULL AND CAST(? AS INTEGER) IS NULL))",
+        (technician_id, ticket_id, ticket["state"], ticket["technician_id"], ticket["technician_id"]))
 
 def assigned(db, user, ticket_id, state):
     require(user, "technician")
@@ -74,21 +90,22 @@ def assigned(db, user, ticket_id, state):
         error("Este ticket está atribuído a outro technician.", 403)
     if ticket["state"] != state:
         error(f"Operação indisponível: o ticket não está no estado {state}.")
+    return ticket
 
 def start(db, user, ticket_id):
     assigned(db, user, ticket_id, "Open")
-    db.execute("UPDATE tickets SET state='In Progress' WHERE id=?", (ticket_id,))
-    db.commit()
-    return get(db, ticket_id)
+    return guarded_update(db,
+        "UPDATE tickets SET state='In Progress' WHERE id=? AND state='Open' AND technician_id=?",
+        (ticket_id, user["id"]))
 
 def resolve(db, user, ticket_id, solution):
     assigned(db, user, ticket_id, "In Progress")
     if not solution.strip():
         error("Registe a solução antes de resolver o ticket.")
-    db.execute("UPDATE tickets SET state='Resolved',resolution=? WHERE id=?",
-               (solution.strip(), ticket_id))
-    db.commit()
-    return get(db, ticket_id)
+    return guarded_update(db,
+        "UPDATE tickets SET state='Resolved',resolution=? WHERE id=? "
+        "AND state='In Progress' AND technician_id=?",
+        (solution.strip(), ticket_id, user["id"]))
 
 def reopen(db, user, ticket_id):
     require(user, "employee")
@@ -97,9 +114,9 @@ def reopen(db, user, ticket_id):
         error("Não pode alterar tickets de outros employeees.", 403)
     if ticket["state"] != "Resolved":
         error("Apenas tickets Resolveds podem regressar a In Progress.")
-    db.execute("UPDATE tickets SET state='In Progress' WHERE id=?", (ticket_id,))
-    db.commit()
-    return get(db, ticket_id)
+    return guarded_update(db,
+        "UPDATE tickets SET state='In Progress' WHERE id=? AND state='Resolved' AND creator_id=?",
+        (ticket_id, user["id"]))
 
 def close(db, user, ticket_id, confirmed):
     require(user, "responsavel")
@@ -108,6 +125,5 @@ def close(db, user, ticket_id, confirmed):
         error("Apenas tickets Resolveds podem ser fechados.")
     if not confirmed:
         error("Confirme que verificou a resolução antes de fechar.")
-    db.execute("UPDATE tickets SET state='Closed' WHERE id=?", (ticket_id,))
-    db.commit()
-    return get(db, ticket_id)
+    return guarded_update(db,
+        "UPDATE tickets SET state='Closed' WHERE id=? AND state='Resolved'", (ticket_id,))

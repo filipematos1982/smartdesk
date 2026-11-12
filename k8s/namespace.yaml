@@ -1,0 +1,7 @@
+# Only for a new dedicated local cluster, never an existing context.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: smartdesk-lab
+  labels:
+    app.kubernetes.io/part-of: smartdesk

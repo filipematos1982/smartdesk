@@ -1,7 +1,7 @@
-"""Persistência PostgreSQL em Docker; SQLite apenas para fixtures legadas isoladas.
+"""PostgreSQL persistence with explicit connection settings and isolated SQLite fixtures.
 
-As assinaturas de connect/initialize e as consultas dos serviços são preservadas.
-DATABASE_URL é obrigatória em operação normal: nunca há fallback silencioso.
+DATABASE_URL remains supported; component settings avoid URI password interpolation.
+Initialization creates missing tables without migrating or replacing existing data.
 """
 import os
 import sqlite3
@@ -43,10 +43,11 @@ class Result:
         return iter(self.cursor)
 
 class PostgresConnection:
-    def __init__(self, url):
+    def __init__(self, url=None, **kwargs):
         import psycopg
         from psycopg.rows import dict_row
-        self.connection = psycopg.connect(url, row_factory=dict_row)
+        kwargs.setdefault("connect_timeout", positive_integer_setting("SMARTDESK_DB_CONNECT_TIMEOUT", 5))
+        self.connection = psycopg.connect(url or "", row_factory=dict_row, **kwargs)
 
     def execute(self, sql, params=()):
         # Consultas SQL do MVP usam marcadores SQLite (?).
@@ -79,17 +80,37 @@ class PostgresConnection:
             self.connection.close()
         return False
 
+def positive_integer_setting(name, default):
+    """Reject malformed connection controls before contacting PostgreSQL."""
+    try:
+        value = int(os.getenv(name, str(default)))
+    except ValueError as exc:
+        raise RuntimeError(f"{name} must be a positive integer") from exc
+    if value <= 0:
+        raise RuntimeError(f"{name} must be a positive integer")
+    return value
+
+
 def connect(path=None):
-    """Um path explícito conserva testes SQLite; sem path usa PostgreSQL."""
+    """An explicit path selects isolated SQLite; otherwise use PostgreSQL settings."""
     if path is not None:
         db = sqlite3.connect(path)
         db.row_factory = sqlite3.Row
         db.execute("PRAGMA foreign_keys=ON")
         return db
     url = os.getenv("DATABASE_URL")
-    if not url:
-        raise RuntimeError("DATABASE_URL obrigatória para a aplicação PostgreSQL")
-    return PostgresConnection(url)
+    if url:
+        return PostgresConnection(url)
+    required = ("POSTGRES_HOST", "POSTGRES_DB", "POSTGRES_USER", "POSTGRES_PASSWORD")
+    if not all(os.getenv(name) for name in required):
+        raise RuntimeError("Set DATABASE_URL or all POSTGRES_HOST/DB/USER/PASSWORD components")
+    port = positive_integer_setting("POSTGRES_PORT", 5432)
+    if port > 65535:
+        raise RuntimeError("POSTGRES_PORT must be between 1 and 65535")
+    return PostgresConnection(host=os.environ["POSTGRES_HOST"],
+                              dbname=os.environ["POSTGRES_DB"],
+                              user=os.environ["POSTGRES_USER"],
+                              password=os.environ["POSTGRES_PASSWORD"], port=port)
 
 def initialize(db):
     """Cria as tabelas em falta, sem apagar nem substituir dados."""

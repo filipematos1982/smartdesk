@@ -33,7 +33,7 @@ cp -n .env.example .env
 
 Edit `.env` locally before starting containers:
 
-- Replace `POSTGRES_PASSWORD` with a unique random password using URL-safe letters, digits, `-`, and `_`. The current Compose file interpolates credentials into a URI without percent encoding. Broader URI-safe connection construction belongs to Session 3.
+- Replace `POSTGRES_PASSWORD` with a unique random password. Session 3 passes database credentials as separate psycopg parameters rather than interpolating them into a URI. Single-quote values containing `$` in the private `.env` to avoid Compose interpolation.
 - Replace `SMARTDESK_SESSION_SECRET` with a different random signing key of at least 32 characters. It is not a login password. Generate it with a password manager or a local cryptographic generator; never paste it into Git, logs, or chat. The supplied placeholder is not a usable secret.
 - `SMARTDESK_COOKIE_SECURE=false` is an explicit exception for this loopback-only HTTP lab. The application defaults to secure cookies; use `true` with HTTPS. A secure cookie will not be sent over ordinary HTTP.
 - `SMARTDESK_SESSION_MAX_AGE=3600` limits session cookie lifetime to one hour.
@@ -65,7 +65,7 @@ The account script prompts privately for a password of at least eight characters
 docker compose up -d web
 ```
 
-Open `http://localhost:8080/login`. Compose binds the web port to loopback and does not publish PostgreSQL. Existing data resides in the `postgres_data` named volume. This Session 2 work does not authorize deleting volumes, migrating data, or deploying to Kubernetes or Azure.
+Open `http://localhost:8080/login`. Compose binds the web port to loopback and does not publish PostgreSQL. Existing data resides in the `postgres_data` named volume. Never delete an existing volume to repair a lab setup. Use only the dedicated Session 3 lab for validation; Azure deployment remains separately authorized.
 
 ## Authentication and request security
 
@@ -83,11 +83,13 @@ Local Python is optional for Docker operation. An existing development environme
 env -u DATABASE_URL PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest tests/ --ignore=tests/test_postgres.py -p no:cacheprovider -ra
 ```
 
-The PostgreSQL file is intentionally excluded: its current fixture creates and drops schemas using `DATABASE_URL`. Do not run it against the application database. Session 3 requires a separately approved local test database and target guards before any PostgreSQL validation. Do not run the all-suite report script against the normal Compose environment.
+The command above intentionally excludes PostgreSQL. Session 3 PostgreSQL tests require `SMARTDESK_TEST_DATABASE_URL`, explicit approval, and a verified target marker; they never fall back to application `DATABASE_URL`. Each test creates a unique schema in the approved disposable target and leaves it intact. Do not point tests at the application database or an unknown target. See the Session 3 validation record for the verified local procedure.
 
 The suite includes automated business-rule, HTTP, security, and BDD checks. Skipped performance and real Chrome/Edge criteria remain unvalidated; TestClient is not a real browser. See [Session 2 validation](docs/qualidade/04_session_2_validation.md) for actual commands, results, and limits from this implementation.
 
 ## Training boundaries and remaining work
+
+Session 3 follows the confirmed training outline and the public instructor implementation reference. See [reference and Docker Hub boundaries](docs/arquitetura/05_session_3_reference.md), [PostgreSQL architecture](docs/arquitetura/04_persistencia_postgresql.md), and [executed Session 3 validation](docs/qualidade/05_session_3_validation.md). The full Notebook 09A/09B instructions are unavailable; their exact acceptance cannot be certified. Local builds and k3s image imports do not publish to Docker Hub.
 
 - **Session 1:** approved requirements and Gherkin remain unchanged.
 - **Session 2:** bootstrap, web authentication/CSRF/throttling, HTTP/SQLite regression checks, and container hardening. Automated success alone does not certify a running Docker deployment.
@@ -95,4 +97,4 @@ The suite includes automated business-rule, HTTP, security, and BDD checks. Skip
 - **Session 4:** expanded PostgreSQL/security coverage, real browser/performance acceptance, reliable reports, Jenkins gates, and reproducible image delivery.
 - **Session 5:** instructor-confirmed Azure preparation, actual regional pricing, networking/TLS/identity/monitoring/rollback, and separately authorized deployment.
 
-Public exposure remains unapproved. PostgreSQL acceptance, concurrency remediation, distributed throttling, recovery, proxy configuration, and cloud readiness are not established by Session 2. No `/health` endpoint or new MVP feature is introduced here.
+Public exposure remains unapproved. Session 2 alone does not establish PostgreSQL acceptance, concurrency remediation, recovery, proxy configuration, distributed throttling, or cloud readiness. Session 3 evidence is recorded separately. No `/health` endpoint or new MVP feature is introduced here.
