@@ -1,4 +1,4 @@
-# Ficheiros locais que nunca devem ser publicados.
+# Local environments, generated output, and credentials must stay out of Git.
 __pycache__/
 .pytest_cache/
 .venv/
@@ -6,6 +6,21 @@ __pycache__/
 *.sqlite3
 *.db
 .env
+.env.*
+!.env.example
+.aws/
+.azure/
+.kube/
+kubeconfig
+kubeconfig.*
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_ed25519
+*.log
+*.tmp
 .coverage
 htmlcov/
 reports/

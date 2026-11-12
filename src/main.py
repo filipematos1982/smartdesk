@@ -6,7 +6,7 @@ delegadas em services.py e a persistência em database.py.
 import os
 from contextlib import asynccontextmanager
 from pathlib import Path
-from fastapi import FastAPI, Request, Form, HTTPException
+from fastapi import FastAPI, Request, Form, HTTPException, Depends
 from fastapi.responses import RedirectResponse, HTMLResponse
 from fastapi.exception_handlers import http_exception_handler
 from fastapi.templating import Jinja2Templates
@@ -14,7 +14,8 @@ from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 from .demo_seed import seed_demo_users
 from .database import connect, initialize
-from .auth import verify, current
+from .auth import verify, current, hash_password
+from .security import csrf_token, require_csrf, LoginLimiter
 from . import services
 
 BASE = Path(__file__).parent
@@ -33,17 +34,33 @@ def create_app(path=None, secret=None):
         yield
 
     key = secret or os.getenv("SMARTDESK_SESSION_SECRET")
-    if not key or len(key) < 32:
-        raise RuntimeError("Defina SMARTDESK_SESSION_SECRET com pelo menos 32 caracteres")
-    app = FastAPI(title="SmartDesk", lifespan=lifespan)
-    app.add_middleware(SessionMiddleware, secret_key=key, same_site="lax", https_only=False)
+    if not key or len(key) < 32 or key.startswith("REPLACE_WITH_"):
+        raise RuntimeError("Set SMARTDESK_SESSION_SECRET to at least 32 characters")
+    secure_setting = os.getenv("SMARTDESK_COOKIE_SECURE", "true").lower()
+    if secure_setting not in {"true", "false"}:
+        raise RuntimeError("SMARTDESK_COOKIE_SECURE must be true or false")
+    try:
+        session_max_age = int(os.getenv("SMARTDESK_SESSION_MAX_AGE", "3600"))
+    except ValueError as exc:
+        raise RuntimeError("SMARTDESK_SESSION_MAX_AGE must be a positive integer") from exc
+    if session_max_age <= 0:
+        raise RuntimeError("SMARTDESK_SESSION_MAX_AGE must be a positive integer")
+    app = FastAPI(title="SmartDesk", lifespan=lifespan, dependencies=[Depends(require_csrf)])
+    app.add_middleware(SessionMiddleware, secret_key=key, same_site="lax",
+                       https_only=secure_setting == "true", max_age=session_max_age)
+    app.state.login_limiter = LoginLimiter()
+    # Unknown accounts perform the same password-hash work as existing accounts.
+    dummy_password_hash = hash_password(os.urandom(32).hex())
     app.mount("/static", StaticFiles(directory=str(BASE / "static")), name="static")
 
     def connection():
         return connect(path)
 
     def render(request, template, **context):
-        return templates.TemplateResponse(request, template, context)
+        context["csrf_token"] = csrf_token(request)
+        response = templates.TemplateResponse(request, template, context)
+        response.headers["Cache-Control"] = "no-store"
+        return response
 
     def go(ticket):
         return RedirectResponse(f"/tickets/{ticket['id']}", status_code=303)
@@ -57,6 +74,7 @@ def create_app(path=None, secret=None):
             return RedirectResponse("/login", status_code=303)
         response = render(request, "error.html", message=str(exc.detail))
         response.status_code = exc.status_code
+        response.headers.update(exc.headers or {})
         return response
 
     @app.get("/")
@@ -69,12 +87,17 @@ def create_app(path=None, secret=None):
 
     @app.post("/login")
     def login(request: Request, email: str = Form(...), password: str = Form(...)):
+        address = request.client.host if request.client else "unknown"
+        app.state.login_limiter.check(address)
         with connection() as db:
             row = db.execute("SELECT * FROM users WHERE email=?", (email.strip().lower(),)).fetchone()
-        if not row or not verify(password, row["secret"]):
-            return render(request, "login.html", error="Email ou palavra-passe incorretos.")
+        valid_password = verify(password, row["secret"] if row else dummy_password_hash)
+        if not row or not valid_password:
+            return render(request, "login.html", error="Incorrect email or password.")
+        app.state.login_limiter.reset(address)
         request.session.clear()
         request.session["uid"] = row["id"]
+        csrf_token(request)
         return RedirectResponse("/tickets", status_code=303)
 
     @app.post("/logout")
@@ -94,7 +117,7 @@ def create_app(path=None, secret=None):
         with connection() as db:
             user = current(request, db)
         if user["role"] != "employee":
-            raise HTTPException(403, "Apenas employeees podem criar tickets.")
+            raise HTTPException(403, "Only employees can create tickets.")
         return render(request, "ticket_form.html", user=user, categories=services.CATEGORIES, error=None)
 
     @app.post("/tickets/new")

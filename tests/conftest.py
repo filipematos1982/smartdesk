@@ -3,6 +3,7 @@
 Cada teste começa com uma base nova. Nenhum teste modifica dados reais.
 """
 import os
+import re
 import pytest
 from fastapi.testclient import TestClient
 from src.database import connect, initialize
@@ -25,11 +26,22 @@ def env(tmp_path):
             db.execute("INSERT INTO users(name,email,secret,role) VALUES(?,?,?,?)",
                        (name, email, hash_password("Password123!"), role))
         db.commit()
-    with TestClient(create_app(path=path, secret="test-secret-of-at-least-32-characters")) as client:
+    with TestClient(create_app(path=path, secret="test-secret-of-at-least-32-characters"), base_url="https://testserver") as client:
         yield client, path
 
+def csrf(client):
+    page = client.get("/login")
+    return re.search(r'name="csrf-token" content="([^"]+)"', page.text).group(1)
+
+
+def post_form(client, url, **kwargs):
+    headers = dict(kwargs.pop("headers", {}))
+    headers["X-CSRF-Token"] = csrf(client)
+    return client.post(url, headers=headers, **kwargs)
+
+
 def login(client, email, password="Password123!"):
-    response = client.post("/login", data={"email": email, "password": password},
+    response = post_form(client, "/login", data={"email": email, "password": password},
                            follow_redirects=False)
     assert response.status_code == 303
     return response

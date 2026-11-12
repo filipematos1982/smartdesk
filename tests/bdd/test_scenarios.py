@@ -7,7 +7,7 @@ import pytest
 from pytest_bdd import scenario, given, when, then, parsers
 from src.database import connect
 from src import services
-from tests.conftest import login, person, create_ticket
+from tests.conftest import post_form, login, person, create_ticket
 
 FEATURE = "../../features/tickets.feature"
 
@@ -140,7 +140,7 @@ def create_form(ctx):
 @when(parsers.parse('selects the "{category}" category'))
 def choose_category(ctx, category):
     ctx["data"]["category"] = category
-    ctx["response"] = ctx["client"].post("/tickets/new", data=ctx["data"], follow_redirects=False)
+    ctx["response"] = post_form(ctx["client"], "/tickets/new", data=ctx["data"], follow_redirects=False)
 
 
 @then("the ticket is recorded")
@@ -319,7 +319,7 @@ def invalid_forms(ctx):
     for field in ("title", "description", "category"):
         data = {"title": "Request", "description": "Issue", "category": "Hardware"}
         data[field] = ""
-        response = ctx["client"].post("/tickets/new", data=data)
+        response = post_form(ctx["client"], "/tickets/new", data=data)
         ctx["errors"].append((field, response))
 
 
@@ -374,7 +374,7 @@ def sign_in(ctx):
 
 @when("creates a ticket with the required fields")
 def create_required(ctx):
-    ctx["response"] = ctx["client"].post(
+    ctx["response"] = post_form(ctx["client"],
         "/tickets/new",
         data={"title": "Printer", "description": "Issue", "category": "Hardware"},
         follow_redirects=False,

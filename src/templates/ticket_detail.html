@@ -6,18 +6,18 @@
 <dt>Solução</dt><dd>{{ ticket.resolution or "Ainda não registada" }}</dd></dl>
 {% set url = "/api/tickets/" ~ ticket.id %}
 {% if user.role == "responsavel" and ticket.state in ("Open","In Progress") %}
-<form action="{{ url }}/assign" method="post"><label>Técnico
+<form action="{{ url }}/assign" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><label>Técnico
 <select name="technician_id" required>{% for tech in technicians %}
 <option value="{{ tech.id }}" {% if ticket.technician_id == tech.id %}selected{% endif %}>{{ tech.name }}</option>
 {% endfor %}</select></label><button>Atribuir / reatribuir</button></form>{% endif %}
 {% if user.role == "technician" and ticket.technician_id == user.id %}
-{% if ticket.state == "Open" %}<form action="{{ url }}/start" method="post"><button>Iniciar tratamento</button></form>{% endif %}
-{% if ticket.state == "In Progress" %}<form action="{{ url }}/resolve" method="post">
+{% if ticket.state == "Open" %}<form action="{{ url }}/start" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button>Iniciar tratamento</button></form>{% endif %}
+{% if ticket.state == "In Progress" %}<form action="{{ url }}/resolve" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token }}">
 <label>Solução<textarea name="resolution" required></textarea></label><button>Registar resolução</button></form>{% endif %}
 {% endif %}
 {% if user.role == "employee" and ticket.creator_id == user.id and ticket.state == "Resolved" %}
-<form action="{{ url }}/return" method="post"><button>O problema persiste</button></form>{% endif %}
+<form action="{{ url }}/return" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button>O problema persiste</button></form>{% endif %}
 {% if user.role == "responsavel" and ticket.state == "Resolved" %}
-<form action="{{ url }}/close" method="post"><label><input name="confirmed" type="checkbox" value="true" required> Verifiquei a resolução</label>
+<form action="{{ url }}/close" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><label><input name="confirmed" type="checkbox" value="true" required> Verifiquei a resolução</label>
 <button>Fechar ticket</button></form>{% endif %}
 {% endblock %}

@@ -1,7 +1,7 @@
 {% extends "base.html" %}{% block content %}
 <h2>Criar ticket</h2>
 {% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
-<form action="/tickets/new" method="post">
+<form action="/tickets/new" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token }}">
 <label>Título<input name="title" required value="{{ title_value or '' }}"></label>
 <label>Descrição<textarea name="description" required>{{ description_value or '' }}</textarea></label>
 <label>Categoria<select name="category" required><option value="">Escolher</option>

@@ -1,132 +1,98 @@
-# SmartDesk — Sistema de Gestão de Pedidos de Suporte
+# SmartDesk — Support Ticket Management
 
-Projeto pedagógico da NexaServ: aplicação FastAPI, HTML simples e PostgreSQL local. Nesta sessão utiliza-se **Docker e Docker Compose**; não é necessário instalar Python, FastAPI ou PostgreSQL no computador.
+SmartDesk is a personal training project with a FastAPI/Jinja web interface and PostgreSQL persistence. The approved [MVP](docs/produto/03_mvp_backlog_e_aceitacao.md), [requirements](docs/produto/02_requisitos_e_user_stories.md), and [Gherkin scenarios](features/tickets.feature) remain authoritative. Existing database values and API route names are preserved.
 
-A [especificação aprovada](docs/produto/03_mvp_backlog_e_aceitacao.md), os [testes e a rastreabilidade](docs/qualidade/01_testes_e_rastreabilidade.md) e os [cenários Gherkin](features/tickets.feature) permanecem como referência.
+## MVP responsibilities
 
-## Funcionalidades do MVP
+- Employees create and view their own tickets and report unresolved problems.
+- Technicians view assigned tickets, start work, and record a resolution.
+- Managers view all tickets, assign or reassign technicians, and close resolved tickets after checking the solution.
+- States: `Open → In Progress → Resolved → Closed`; a resolved ticket can return to `In Progress`. Closed tickets cannot reopen.
+- Categories: `Hardware`, `Software`, and `Access`. Title, description, and category are required.
 
-- **Ana**, colaboradora: cria e consulta os próprios tickets; comunica quando um problema Resolvido persiste.
-- **Miguel**, técnico: consulta tickets atribuídos, inicia o tratamento e regista a resolução.
-- **Sofia**, responsável de TI: consulta todos os tickets, atribui ou reatribui técnicos e fecha os Resolvidos depois de verificar a solução (sem confirmação formal obrigatória de Ana).
-- Estados: **Aberto → Em tratamento → Resolvido → Fechado**; **Resolvido → Em tratamento** é permitido; **Fechado** não reabre.
-- Categorias: **Equipamento, Software, Acessos**. Título, descrição e categoria são obrigatórios.
+## Local Docker setup
 
-## Preparar e executar — apenas Docker Compose
+Prerequisite: Docker with Docker Compose and Linux container support. Run commands from the personal SmartDesk checkout. These instructions describe approved procedures; they do not prove that a build or database validation has run.
 
-**Pré-requisito:** Docker com Docker Compose disponível e a funcionar (contentores Linux). Os comandos seguintes são executados na pasta do projeto. Não é necessário Python local.
-
-### 1. Obter o repositório
+### 1. Obtain the personal repository
 
 ```bash
-git clone https://github.com/smartlearningci/smartdesk.git
+git clone https://github.com/filipematos1982/smartdesk.git
 cd smartdesk
 ```
 
-Se já tiver o repositório clonado, entre na pasta e execute `git pull`.
+For an existing checkout, use its current directory and preserve local work; do not clone over it or reset it.
 
-### 2. Preparar a configuração local
+### 2. Prepare local configuration
+
+If `.env` does not exist, copy the supplied example without overwriting an existing file:
 
 ```bash
-cp .env.example .env
+cp -n .env.example .env
 ```
 
-O exemplo inclui credenciais PostgreSQL fictícias e uma **chave de sessão fictícia** com mais de 32 caracteres. Edite a palavra-passe PostgreSQL no `.env` antes de iniciar. Não é necessário gerar outra chave para esta demonstração local. A chave `SMARTDESK_SESSION_SECRET` serve para assinar os cookies da aplicação; **não é uma palavra-passe de utilizador**. O ficheiro `.env` é ignorado pelo Git e pelo build Docker.
+Edit `.env` locally before starting containers:
 
-### 3. Construir a imagem
+- Replace `POSTGRES_PASSWORD` with a unique random password using URL-safe letters, digits, `-`, and `_`. The current Compose file interpolates credentials into a URI without percent encoding. Broader URI-safe connection construction belongs to Session 3.
+- Replace `SMARTDESK_SESSION_SECRET` with a different random signing key of at least 32 characters. It is not a login password. Generate it with a password manager or a local cryptographic generator; never paste it into Git, logs, or chat. The supplied placeholder is not a usable secret.
+- `SMARTDESK_COOKIE_SECURE=false` is an explicit exception for this loopback-only HTTP lab. The application defaults to secure cookies; use `true` with HTTPS. A secure cookie will not be sent over ordinary HTTP.
+- `SMARTDESK_SESSION_MAX_AGE=3600` limits session cookie lifetime to one hour.
+- Leave `SMARTDESK_SEED_DEMO_USERS=0`. Create synthetic users interactively instead of embedding login passwords in configuration.
+
+Do not reuse production credentials. Environment files, local credential directories, private keys, test databases, and generated reports are excluded from Git. `.env.example` contains placeholders only.
+
+Changing PostgreSQL initialization variables does not change credentials already stored in an existing database volume. Preserve that volume and arrange a separate approved credential change if necessary; never remove data to make setup succeed.
+
+### 3. Build and create local demonstration accounts
 
 ```bash
 docker compose build
-```
-
-O `Dockerfile` instala as dependências Python **dentro da imagem**, incluindo Jinja2 para os templates HTML.
-
-### 4. Criar os utilizadores de demonstração dentro do Docker
-
-**Executar antes do primeiro login:**
-
-```bash
 docker compose up -d db
 docker compose run --rm web python -m scripts.create_demo_users
 ```
 
-O script solicita interativamente uma palavra-passe para cada conta. Escolha uma palavra-passe simples **com pelo menos oito caracteres**, apenas para o laboratório. O terminal não apresenta os caracteres enquanto escreve; prima Enter após cada palavra-passe. Pode usar a mesma palavra-passe nas três contas de teste, se preferir, mas não utilize palavras-passe reais.
+The account script prompts privately for a password of at least eight characters and skips accounts that already exist. Use synthetic lab passwords only. It stores password hashes, not plaintext passwords.
 
-| Perfil | Email de login |
-|---|---|
-| Ana Martins — colaboradora | `ana@nexaserv.test` |
-| Miguel Costa — técnico | `miguel@nexaserv.test` |
-| Sofia Almeida — responsável TI | `sofia@nexaserv.test` |
+| Role | Demonstration login |
+| --- | --- |
+| Employee | `ana@nexaserv.test` |
+| Technician | `miguel@nexaserv.test` |
+| Manager | `sofia@nexaserv.test` |
 
-As palavras-passe de login são guardadas como hashes na base de dados PostgreSQL do volume Docker, **não** no `.env`, no `Dockerfile` ou no GitHub. Se as contas já existirem, o script não as recria.
-
-### 5. Iniciar a aplicação
+### 4. Start the local web application
 
 ```bash
-docker compose up -d
+docker compose up -d web
 ```
 
-Abrir **http://localhost:8080/login**. A porta está publicada apenas em `127.0.0.1:8080`, pelo que o acesso se destina ao próprio computador.
+Open `http://localhost:8080/login`. Compose binds the web port to loopback and does not publish PostgreSQL. Existing data resides in the `postgres_data` named volume. This Session 2 work does not authorize deleting volumes, migrating data, or deploying to Kubernetes or Azure.
 
-### 6. Consultar logs
+## Authentication and request security
+
+Session cookies are signed, HTTP-only, use `SameSite=Lax`, and are secure by default. Keep the signing key private and consistent for a single deployment. Signed cookie contents are not encrypted: never store secrets in them. Login replaces the anonymous session and CSRF token; logout clears the browser session. A previously copied signed cookie cannot be centrally revoked by this single-process design before its expiry or signing-key rotation.
+
+Every unsafe browser or cookie-authenticated API request requires a CSRF token. Forms include a hidden `csrf_token`; HTML pages also expose it through the `csrf-token` meta element. API clients first obtain a page in the same cookie session, then send its token as `X-CSRF-Token` on writes. After login, obtain the new token before further writes. Missing or invalid tokens return HTTP 403; route paths and existing business payload fields are unchanged.
+
+Login throttling allows up to five failed attempts per 60-second window per socket client IP and returns HTTP 429 when exceeded. A successful login resets that address counter. Its bounded in-memory state is process-local and resets on restart. It is a local-lab defense, not a distributed limiter. Shared client IPs share a limit. Do not trust arbitrary forwarded headers; proxy identity and shared throttling require a separate deployment design.
+
+## Session 2 automated validation
+
+Local Python is optional for Docker operation. An existing development environment can run the following isolated SQLite/HTTP suite without contacting PostgreSQL or generating reports:
 
 ```bash
-docker compose logs -f web
+env -u DATABASE_URL PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest tests/ --ignore=tests/test_postgres.py -p no:cacheprovider -ra
 ```
 
-Prima Ctrl+C para sair da visualização dos logs sem parar a aplicação.
+The PostgreSQL file is intentionally excluded: its current fixture creates and drops schemas using `DATABASE_URL`. Do not run it against the application database. Session 3 requires a separately approved local test database and target guards before any PostgreSQL validation. Do not run the all-suite report script against the normal Compose environment.
 
-### 7. Executar os testes dentro do Docker
+The suite includes automated business-rule, HTTP, security, and BDD checks. Skipped performance and real Chrome/Edge criteria remain unvalidated; TestClient is not a real browser. See [Session 2 validation](docs/qualidade/04_session_2_validation.md) for actual commands, results, and limits from this implementation.
 
-```bash
-docker compose run --rm --no-deps web python -m scripts.run_validation
-```
+## Training boundaries and remaining work
 
-O comando executa separadamente testes unitários, integração HTTP, cenários Gherkin e integração PostgreSQL com `pytest-bdd`, gerando `reports/index.html` e ficheiros JUnit XML/HTML por conjunto. **A existência dos testes não significa que tenham sido executados ou aprovados.** T-11 (desempenho) e T-12 (Chrome/Edge) permanecem explicitamente ignorados até à validação real. Consulte `docs/qualidade/03_plano_validacao.md` para condições iniciais, ações e resultados esperados.
+- **Session 1:** approved requirements and Gherkin remain unchanged.
+- **Session 2:** bootstrap, web authentication/CSRF/throttling, HTTP/SQLite regression checks, and container hardening. Automated success alone does not certify a running Docker deployment.
+- **Session 3:** ticket concurrency, PostgreSQL transactions/persistence/recovery, isolated database validation, and local Kubernetes/k3s. Existing data and volumes must be preserved.
+- **Session 4:** expanded PostgreSQL/security coverage, real browser/performance acceptance, reliable reports, Jenkins gates, and reproducible image delivery.
+- **Session 5:** instructor-confirmed Azure preparation, actual regional pricing, networking/TLS/identity/monitoring/rollback, and separately authorized deployment.
 
-### 8. Parar
-
-```bash
-docker compose down
-```
-
-Este comando remove os contentores e a rede, mas **preserva o volume** `smartdesk_data` com os utilizadores e tickets. Não use `docker compose down -v` se quiser manter os dados.
-
-## Ficheiros e responsabilidades
-
-| Caminho | Função |
-|---|---|
-| `Dockerfile` | Imagem Python 3.12-slim, dependências e arranque Uvicorn |
-| `compose.yaml` | Serviço `web`, porta local 8080 e volume PostgreSQL |
-| `.dockerignore` | Exclui ficheiros locais e segredos do contexto de build |
-| `.env.example` | Chave de sessão fictícia, pronta a copiar |
-| `requirements.txt` | Dependências Python, incluindo Jinja2 |
-| `src/main.py` | Interface HTTP e rotas FastAPI |
-| `src/services.py` | Regras de negócio e permissões |
-| `src/auth.py` | Autenticação e hashes de palavras-passe |
-| `src/database.py` | Ligação PostgreSQL por `DATABASE_URL`; SQLite apenas em testes isolados |
-| `src/templates/`, `src/static/` | Interface HTML e CSS |
-| `scripts/create_demo_users.py` | Criação interativa de contas fictícias |
-| `tests/` | Testes unitários, integração e BDD |
-| `scripts/run_validation.py` | Executa os conjuntos e gera relatórios JUnit/HTML |
-| `scripts/generate_report.py` | Consolida os resultados sem considerar não executados como aprovados |
-| `reports/` | Resultados locais, excluídos do Git |
-| `docs/`, `features/` | Requisitos, critérios e cenários aprovados |
-
-## Limites da demonstração
-
-Um único serviço web, sem novos endpoints ou funcionalidades de negócio. A base PostgreSQL é persistida no volume `postgres_data` do Docker. O volume SQLite anterior não é importado automaticamente. Não foi acrescentado `/health` porque ainda não foi aprovado. A aplicação **não está preparada para exposição pública**: faltam proteção CSRF e configuração HTTPS/cookies seguros. A chave de sessão de exemplo é deliberadamente fictícia e exclusiva deste laboratório.
-
-**Validação:** estes comandos são o procedimento previsto; a publicação do código, por si só, não comprova que Docker ou os testes tenham sido executados.
-
-## Balanço da demonstração local
-
-A sessão de demonstração local foi dada como terminada, mas **não foram fornecidos logs, relatórios de testes ou resultados observados**. Assim, não é possível afirmar que o arranque, o login ou qualquer teste tenha passado. Os procedimentos acima são instruções de execução, não evidência de sucesso.
-
-**Falhas observadas:** nenhuma foi comunicada; isto não significa ausência de falhas. **Limitações conhecidas:** T-11 exige medição real de desempenho; T-12 exige Chrome e Edge reais; a aplicação não está preparada para exposição pública (CSRF/HTTPS).
-
-**Próximos passos da formação:** recolher e analisar os relatórios reais (`reports/index.html` e JUnit XML), corrigir eventuais falhas comprovadas e prosseguir para as etapas de CI/CD e cloud sem alterar o MVP aprovado. Consultar [estado da validação](docs/qualidade/02_estado_implementacao.md).
-
-## Evolução V2 — PostgreSQL
-
-A base operacional utiliza o serviço `db` (PostgreSQL 16), acessível apenas na rede interna Compose. O serviço `web` aguarda o healthcheck de `db`. O esquema `users`/`tickets` é inicializado sem apagar registos. O volume `postgres_data` preserva utilizadores e tickets entre reinícios. Os testes SQLite antigos mantêm-se isolados, e os testes PostgreSQL utilizam esquemas temporários. Consulte [a arquitetura PostgreSQL](docs/arquitetura/04_persistencia_postgresql.md). **Não foi executada nem comprovada a migração dos dados SQLite anteriores.**
+Public exposure remains unapproved. PostgreSQL acceptance, concurrency remediation, distributed throttling, recovery, proxy configuration, and cloud readiness are not established by Session 2. No `/health` endpoint or new MVP feature is introduced here.
