@@ -7,7 +7,7 @@ import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 from fastapi import FastAPI, Request, Form, HTTPException, Depends
-from fastapi.responses import RedirectResponse, HTMLResponse
+from fastapi.responses import RedirectResponse, HTMLResponse, JSONResponse
 from fastapi.exception_handlers import http_exception_handler
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
@@ -17,6 +17,8 @@ from .database import connect, initialize
 from .auth import verify, current, hash_password
 from .security import csrf_token, require_csrf, LoginLimiter
 from . import services
+from .assistance import recommend
+from .observability import Telemetry, ObservabilityMiddleware
 
 BASE = Path(__file__).parent
 templates = Jinja2Templates(directory=str(BASE / "templates"))
@@ -49,6 +51,8 @@ def create_app(path=None, secret=None):
     app.add_middleware(SessionMiddleware, secret_key=key, same_site="lax",
                        https_only=secure_setting == "true", max_age=session_max_age)
     app.state.login_limiter = LoginLimiter()
+    app.state.telemetry = Telemetry()
+    app.add_middleware(ObservabilityMiddleware, telemetry=app.state.telemetry)
     # Unknown accounts perform the same password-hash work as existing accounts.
     dummy_password_hash = hash_password(os.urandom(32).hex())
     app.mount("/static", StaticFiles(directory=str(BASE / "static")), name="static")
@@ -93,7 +97,10 @@ def create_app(path=None, secret=None):
             row = db.execute("SELECT * FROM users WHERE email=?", (email.strip().lower(),)).fetchone()
         valid_password = verify(password, row["secret"] if row else dummy_password_hash)
         if not row or not valid_password:
+            app.state.telemetry.event("authentication_failed", request.scope, 200)
             return render(request, "login.html", error="Incorrect email or password.")
+        request.state.actor_role = row["role"]
+        app.state.telemetry.event("authentication_succeeded", request.scope, 303)
         app.state.login_limiter.reset(address)
         request.session.clear()
         request.session["uid"] = row["id"]
@@ -135,6 +142,48 @@ def create_app(path=None, secret=None):
                               title_value=title, description_value=description,
                               category_value=category)
         return go(ticket)
+
+    def assistance_user(request):
+        with connection() as db:
+            user = current(request, db)
+        if user["role"] not in {"employee", "responsavel"}:
+            raise HTTPException(403, "Only employees and managers may request recommendations.")
+        return user
+
+    @app.post("/api/assist/recommend")
+    def assistance(request: Request, title: str = Form("", max_length=200),
+                   description: str = Form("", max_length=10000)):
+        assistance_user(request)
+        return recommend(title, description)
+
+    @app.post("/tickets/recommend", response_class=HTMLResponse)
+    def recommendation_form(request: Request, title: str = Form("", max_length=200),
+                            description: str = Form("", max_length=10000), category: str = Form("")):
+        user = assistance_user(request)
+        return render(request, "ticket_form.html", user=user, categories=services.CATEGORIES,
+                      error=None, title_value=title, description_value=description,
+                      category_value=category, recommendation=recommend(title, description))
+
+    @app.get("/health/live")
+    def live():
+        return {"status": "live"}
+
+    @app.get("/health/ready")
+    def ready():
+        try:
+            with connection() as db:
+                db.execute("SELECT 1").fetchone()
+        except Exception:
+            return JSONResponse({"status": "not_ready"}, status_code=503)
+        return {"status": "ready"}
+
+    @app.get("/api/monitoring")
+    def monitoring(request: Request):
+        with connection() as db:
+            user = current(request, db)
+        if user["role"] != "responsavel":
+            raise HTTPException(403, "Only managers may view local monitoring.")
+        return app.state.telemetry.snapshot()
 
     @app.get("/tickets/{ticket_id}", response_class=HTMLResponse)
     def detail(request: Request, ticket_id: int):

@@ -44,8 +44,8 @@ services:
     security_opt:
       - no-new-privileges:true
     healthcheck:
-      # This existing route is available only after database startup succeeds.
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/login', timeout=3).close()"]
+      # Readiness checks application/database connectivity without exposing details.
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/ready', timeout=3).close()"]
       interval: 10s
       timeout: 5s
       retries: 6

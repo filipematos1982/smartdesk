@@ -6,4 +6,16 @@
 <label>Descrição<textarea name="description" required>{{ description_value or '' }}</textarea></label>
 <label>Categoria<select name="category" required><option value="">Escolher</option>
 {% for category in categories %}<option value="{{ category }}" {% if category_value == category %}selected{% endif %}>{{ category }}</option>{% endfor %}
-</select></label><button>Criar ticket</button></form>{% endblock %}
+</select></label><button>Criar ticket</button>
+<button type="submit" formaction="/tickets/recommend" formnovalidate>Suggest category and priority locally</button></form>
+{% if recommendation %}
+<section aria-label="Provisional local assistance">
+<h3>Provisional local AI-assisted recommendation</h3>
+<p>This offline teaching extension is advisory only. Instructor acceptance requirements remain unconfirmed.</p>
+<p>Suggested category: <strong>{{ recommendation.category or "No clear match" }}</strong>.
+Select the category yourself before creating the ticket.</p>
+<p>Priority recommendation: <strong>{{ recommendation.priority }}</strong> — {{ recommendation.priority_definition }}</p>
+<p>{{ recommendation.explanation }} Similarity: {{ recommendation.similarity }} (not a probability).</p>
+<p>Matching example terms: {{ recommendation.matched_terms | join(", ") or "None" }}.</p>
+<p>{{ recommendation.limitations }}</p>
+</section>{% endif %}{% endblock %}

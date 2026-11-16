@@ -1,5 +1,15 @@
 # Session 5 — deployment, verification and recovery preparation
 
+## Mandatory zero-Azure-spending policy
+
+**Deployment status: Prepared, not deployed. Authorized Azure spending: EUR 0.**
+
+The user's zero-cost requirement supersedes any earlier proposed deployment budget or approval sequence. This educational project permits infrastructure-as-code, documentation, offline command rendering and local validation only. Do not provision cloud infrastructure, deploy, activate/upgrade paid subscriptions, or consume promotional credits. A free-tier label, scale-to-zero, budget alert or unspent credit does not establish guaranteed zero charges. No company tenant, subscription or credential may be accessed.
+
+The preserved ACA/ACR/PostgreSQL architecture is a paid reference design and is incompatible with the current spending policy. Earlier cost estimates and deployment procedures are educational comparisons, not an approved plan or authorization. If the instructor requires an actual deployment, first establish a genuinely zero-cost option and all eligibility/usage limits from current official evidence, then obtain explicit user approval for that exact option. No such option or deployment is currently verified or approved. No cloud action is authorized by a general review of these documents.
+
+Prefer local PostgreSQL, Docker and Kubernetes demonstrations in a separately approved dedicated personal environment. The current shared Docker environment remains off limits; this policy does not authorize any container or network operation. See [zero-cost training alignment](10_zero_cost_training.md) for the evidence and eight-session status.
+
 ## Current stop point
 
 Everything here is a future procedure for review. This session stops before Azure authentication, account/tenant/subscription inspection, resource creation, image publication, cloud validation and deployment. The shared Docker environment must not be used. No preparation script executes Azure, Terraform deployment, database or Docker commands.
@@ -10,9 +20,9 @@ Render the proposed commands locally:
 PYTHONDONTWRITEBYTECODE=1 python3 -m scripts.azure.prepare --config infra/azure/deployment.example.json --phase all
 ```
 
-The JSON output is explicitly marked offline and contains placeholders. `--execute` is always refused. Rendering does not indicate that prerequisites passed, that a deployment is authorized or that a resource exists. Do not paste the output into a shell without completing the relevant approval stage. Cleanup has no executable deletion commands.
+The default JSON output is marked **Prepared, not deployed**, records the EUR 0 spending limit, and withholds cloud command instructions. `--include-reference-commands` displays preserved educational instructions only; it never authorizes or executes them. The paid design cannot be used under the current policy. The JSON contains placeholders. `--execute` is always refused. Rendering does not indicate that prerequisites passed, that a deployment is authorized or that a resource exists. Do not paste the output into a shell without completing the relevant approval stage. Cleanup has no executable deletion commands.
 
-## Approval sequence before deployment
+## Preserved reference approval sequence — not authorized under the EUR 0 policy
 
 1. Obtain the missing Session 5 instructions and settle whether AKS is compulsory. Approve ACA versus alternatives, region, personal tenant/subscription, resource names and scope, private access design, budget and expected charges. No company resources or credentials may be used.
 2. Authorize a separate personal Azure authentication step and read-only verification of the exact tenant/subscription. Use a fresh dedicated Azure CLI configuration and an approved personal identity. Do not reuse ambient accounts or credential stores. Azure CLI installation must also be separately planned because it is absent locally. Authentication alone does not authorize creation or provider registration.

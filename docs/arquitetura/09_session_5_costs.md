@@ -1,5 +1,15 @@
 # Session 5 Azure cost estimate — EUR
 
+## Mandatory zero-Azure-spending policy
+
+**Deployment status: Prepared, not deployed. Authorized Azure spending: EUR 0.**
+
+The user's zero-cost requirement supersedes any earlier proposed deployment budget or approval sequence. This educational project permits infrastructure-as-code, documentation, offline command rendering and local validation only. Do not provision cloud infrastructure, deploy, activate/upgrade paid subscriptions, or consume promotional credits. A free-tier label, scale-to-zero, budget alert or unspent credit does not establish guaranteed zero charges. No company tenant, subscription or credential may be accessed.
+
+The preserved ACA/ACR/PostgreSQL architecture is a paid reference design and is incompatible with the current spending policy. Earlier cost estimates and deployment procedures are educational comparisons, not an approved plan or authorization. If the instructor requires an actual deployment, first establish a genuinely zero-cost option and all eligibility/usage limits from current official evidence, then obtain explicit user approval for that exact option. No such option or deployment is currently verified or approved. No cloud action is authorized by a general review of these documents.
+
+Prefer local PostgreSQL, Docker and Kubernetes demonstrations in a separately approved dedicated personal environment. The current shared Docker environment remains off limits; this policy does not authorize any container or network operation. See [zero-cost training alignment](10_zero_cost_training.md) for the evidence and eight-session status.
+
 ## Proposal and source
 
 Region proposal: **West Europe (`westeurope`)**, subject to explicit approval, service/SKU availability, subscription quota and data-residency review. This region is a planning assumption, not an instructor requirement or an inspected Azure account setting. No Azure subscription or account was queried.

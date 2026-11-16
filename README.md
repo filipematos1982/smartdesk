@@ -1,5 +1,7 @@
 # SmartDesk — Support Ticket Management
 
+**Azure status: Prepared, not deployed. Maximum authorized Azure spending: EUR 0. Maximum authorized AI API spending: EUR 0.** This educational project allows local preparation and validation only. Do not provision/deploy cloud infrastructure, activate or upgrade paid subscriptions, or consume promotional credits. Free tiers do not guarantee zero charges. Company resources and the current shared Docker environment remain off limits. See the [zero-cost policy and eight-session alignment](docs/arquitetura/10_zero_cost_training.md).
+
 SmartDesk is a personal training project with a FastAPI/Jinja web interface and PostgreSQL persistence. The approved [MVP](docs/produto/03_mvp_backlog_e_aceitacao.md), [requirements](docs/produto/02_requisitos_e_user_stories.md), and [Gherkin scenarios](features/tickets.feature) remain authoritative. Existing database values and API route names are preserved.
 
 ## MVP responsibilities
@@ -65,7 +67,7 @@ The account script prompts privately for a password of at least eight characters
 docker compose up -d web
 ```
 
-Open `http://localhost:8080/login`. Compose binds the web port to loopback and does not publish PostgreSQL. Existing data resides in the `postgres_data` named volume. Never delete an existing volume to repair a lab setup. Use only the dedicated Session 3 lab for validation; Azure deployment remains separately authorized.
+Open `http://localhost:8080/login`. Compose binds the web port to loopback and does not publish PostgreSQL. Existing data resides in the `postgres_data` named volume. Never delete an existing volume to repair a lab setup. Use only the dedicated Session 3 lab for validation; Azure deployment is preparation only and provisioning is prohibited by the EUR 0 policy.
 
 ## Authentication and request security
 
@@ -96,6 +98,9 @@ Session 3 follows the confirmed training outline and the public instructor imple
 - **Session 3:** ticket concurrency, PostgreSQL transactions/persistence/recovery, isolated database validation, and local Kubernetes/k3s. Existing data and volumes must be preserved.
 - **Session 4:** full automated-test inventory, fresh reports, required PostgreSQL CI gate, pinned Python dependencies, and local browser/performance validation where supported. See the Session 4 records below for actual results and runtime blockers.
 - **Session 5:** local Azure preparation, current official EUR pricing, networking/TLS/identity/monitoring/rollback proposals, and explicit approval boundaries. Instructor-specific Azure requirements remain unconfirmed.
+- **Session 6:** confirmed topic: AI-assisted ticket classification and prioritization. Detailed acceptance criteria remain **UNCONFIRMED**; no AI classifier, priority scale or model is introduced.
+- **Session 7:** confirmed topics: security, access control, application logging and monitoring. Existing controls are evidence; detailed acceptance criteria remain **UNCONFIRMED**.
+- **Session 8:** confirmed topics: final integration, documentation, demonstration and presentation. Target date: **26 November 2026**. Final rubric and submission requirements remain **UNCONFIRMED**.
 
 Public exposure remains unapproved. Session 2 alone does not establish PostgreSQL acceptance, concurrency remediation, recovery, proxy configuration, distributed throttling, or cloud readiness. Session 3 evidence is recorded separately. No `/health` endpoint or new MVP feature is introduced here.
 
@@ -135,10 +140,17 @@ Before any separately approved registry delivery, confirm the personal Docker Hu
 
 ## Session 5 Azure preparation
 
-The proposed training architecture uses Azure Container Apps Consumption, ACR Basic and PostgreSQL Flexible Server 16 with private database networking. Managed identity supplies narrowly scoped registry/secret access; Key Vault references keep runtime secrets out of committed configuration. HTTPS terminates at internal application ingress. The initial design exposes no public application endpoint and creates no AKS cluster. An instructor requirement for AKS has not been established.
+The preserved paid reference architecture uses Azure Container Apps Consumption, ACR Basic and PostgreSQL Flexible Server 16 with private database networking. Managed identity supplies narrowly scoped registry/secret access; Key Vault references keep runtime secrets out of committed configuration. HTTPS terminates at internal application ingress. The initial design exposes no public application endpoint and creates no AKS cluster. An instructor requirement for AKS has not been established.
 
 See the [architecture and prerequisites](docs/arquitetura/07_session_5_azure.md), [deployment/verification/rollback runbook](docs/arquitetura/08_session_5_runbook.md), [current EUR cost assumptions](docs/arquitetura/09_session_5_costs.md), and [preparation validation record](docs/qualidade/07_session_5_preparation.md). Draft templates are under `infra/azure/`; local preparation tools are under `scripts/azure/`. Local validation does not establish Azure deployment success, subscription permissions, quota, TLS handshake, image compatibility, managed-identity access or private network connectivity.
 
-West Europe is a proposed region, pending approval. The 730-hour model estimates EUR 46.29/month for a small scale-to-zero workload or EUR 70.51/month with continuous active app compute, before VAT and documented exclusions. Managed load-balancer and egress-IP charges are included. These estimates assume no free credits/grants and are not a spending cap or binding offer.
+For educational comparison only, West Europe is the reference region. The paid 730-hour model estimates EUR 46.29/month for a small scale-to-zero workload or EUR 70.51/month with continuous active app compute, before VAT and documented exclusions. Managed load-balancer and egress-IP charges are included. These estimates assume no free credits/grants. They exceed the EUR 0 requirement and are not an approved budget or deployment option.
 
-Azure CLI is not currently installed. Do not authenticate, inspect an account/subscription, run a cloud plan/what-if, create resources, publish an image, expose the application, or deploy from this preparation. The current shared Docker environment remains off limits. A future deployment needs explicit personal-account/region/budget approval, a dedicated image/PostgreSQL/Jenkins validation environment, protected Terraform state, private administrative access, reviewed secrets and database bootstrap, an immutable tested image digest, and separate approval of the exact infrastructure plan. Public publication requires another security/ingress review and authorization. Cleanup remains a reviewed procedure; no database, backup or resource deletion is authorized.
+Azure CLI is not currently installed. Do not authenticate, inspect an account/subscription, run a cloud plan/what-if, create resources, publish an image to Azure, expose the application, or deploy. The paid reference runbook is documentation only. If the instructor requires an actual Azure deployment, establish a genuinely zero-cost option and obtain explicit approval before any cloud action; promotional credits and free-tier labels are not sufficient. No such deployment is currently verified or approved. Continue local demonstrations only in an approved dedicated personal environment. Cleanup remains a reviewed procedure; no database, backup or resource deletion is authorized.
+
+
+## Final presentation — 26 November 2026
+
+The [provisional final delivery plan](docs/apresentacao/01_final_delivery_plan.md) contains an eight-session outline, a local demonstration checklist, historical evidence references, current blockers and separate pending work for Sessions 6–8. The [compliance matrix](docs/arquitetura/10_zero_cost_training.md) distinguishes confirmed topics from **UNCONFIRMED** instructor acceptance criteria.
+
+The current fallback is an offline evidence walkthrough. Host-only synthetic demonstrations are technically supported by existing tooling but need an approved rehearsal; they are not reported as executed by this documentation task. PostgreSQL, Docker, k3s and actual Jenkins runtime demonstrations remain blocked in the shared environment. Azure remains **Prepared, not deployed**, with EUR 0 authorized spending; AI API spending is also EUR 0. No new feature, commit, push or deployment is part of presentation planning.

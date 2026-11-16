@@ -53,14 +53,14 @@ spec:
             requests: {cpu: 100m, memory: 128Mi}
             limits: {cpu: 500m, memory: 256Mi}
           startupProbe:
-            httpGet: {path: /login, port: http}
+            httpGet: {path: /health/live, port: http}
             failureThreshold: 60
             periodSeconds: 2
           readinessProbe:
-            httpGet: {path: /login, port: http}
+            httpGet: {path: /health/ready, port: http}
             periodSeconds: 5
           livenessProbe:
-            httpGet: {path: /login, port: http}
+            httpGet: {path: /health/live, port: http}
             periodSeconds: 10
           volumeMounts:
             - {name: tmp, mountPath: /tmp}

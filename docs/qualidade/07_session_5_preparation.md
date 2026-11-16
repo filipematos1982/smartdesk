@@ -1,5 +1,11 @@
 # Session 5 safe Azure preparation validation
 
+## Current status and zero-spending restriction
+
+**Azure deployment: Prepared, not deployed. Authorized Azure spending: EUR 0.**
+
+The user's subsequent zero-cost requirement supersedes the earlier hypothetical cost/deployment proposal below. No Azure resource was created or deployed by this work. Azure billing/account state was not inspected; no assertion about unrelated account spending is made. The retained EUR 46.29–70.51 model describes a paid reference design, not authorized spending or a verified zero-cost solution. No subscription activation/upgrade or promotional-credit use is authorized. Current work is restricted to local preparation and validation. See [training alignment](../arquitetura/10_zero_cost_training.md).
+
 ## Baseline and authorization
 
 Verified clean branch `main` at Session 4 commit `84a058a8f0d2d40732576523084493c4ee103ca8`; the existing local tracking reference reported four commits ahead. No fetch or push was performed. The user confirmed the Session 5 file handoff and that no other SmartDesk specialist was active. Only the configured Azure specialist was started for this session; it did not launch other agents. The coordinator owned README, pricing and this validation record while the specialist owned separate infrastructure/architecture/runbook files.

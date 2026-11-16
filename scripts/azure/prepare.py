@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 
-def render(config, phase):
+def render(config, phase, include_reference_commands=False):
     required = ("subscription_id", "tenant_id", "prefix", "location", "image_digest")
     missing = [name for name in required if not isinstance(config.get(name), str) or not config[name]]
     if missing:
@@ -31,24 +31,29 @@ def render(config, phase):
         ],
         "cleanup": [],
     }
-    selected = commands if phase == "all" else {phase: commands[phase]}
+    reference = commands if phase == "all" else {phase: commands[phase]}
+    selected = reference if include_reference_commands else {name: [] for name in reference}
     return {
         "mode": "OFFLINE RENDER ONLY: commands have not been executed",
+        "deployment_status": "Prepared, not deployed",
+        "azure_spending_limit_eur": 0,
+        "cloud_provisioning_authorized": False,
+        "promotional_credit_use_authorized": False,
+        "reference_commands_included": include_reference_commands,
+        "rendered_commands_are_authorized": False,
         "authentication_performed": False,
         "resources_created": False,
         "deployment_success": False,
         "region_proposal": config["location"],
         "requires_separate_approval": [
-            "Personal tenant/subscription authentication and identity verification",
-            "Encrypted state, roles, SKU/quota checks, budget and foundation creation",
-            "Registry publication and private database role/secret initialization",
-            "Private application deployment and independent deployment verification",
-            "Public exposure architecture/security review and publishing approval",
-            "Rollback mutations or exact-resource cleanup with data retention",
+            "Instructor confirmation that an actual Azure deployment is required",
+            "Verified genuinely zero-cost option, eligibility, limits and dependencies",
+            "Explicit user approval of that exact zero-cost option before any cloud action",
+            "Promotional credit consumption is not authorized and cannot be assumed",
         ],
         "rendered_commands": selected,
         "cleanup": "Procedure only: preserve databases, backups, registry and state; no deletion commands are generated.",
-        "warning": "Placeholders remain intentional. No plan/apply/what-if, Azure CLI or Docker call is made by this script.",
+        "warning": "The paid reference architecture is incompatible with the EUR 0 policy. Instructions are withheld by default; reference output is documentation only. No plan/apply/what-if, Azure CLI or Docker call is made.",
     }
 
 
@@ -56,12 +61,13 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", type=Path, default=Path("infra/azure/deployment.example.json"))
     parser.add_argument("--phase", choices=("all", "foundation", "application", "verification", "rollback", "cleanup"), default="all")
+    parser.add_argument("--include-reference-commands", action="store_true", help="Display preserved educational instructions only; never authorizes execution or spending")
     parser.add_argument("--execute", action="store_true", help="Always refused; execution is outside this preparation tool")
     args = parser.parse_args()
     if args.execute:
         parser.error("Execution is not implemented or authorized; this tool renders review material only")
     try:
-        result = render(json.loads(args.config.read_text()), args.phase)
+        result = render(json.loads(args.config.read_text()), args.phase, args.include_reference_commands)
     except (OSError, ValueError, TypeError) as exc:
         parser.error(str(exc))
     print(json.dumps(result, indent=2))

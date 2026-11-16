@@ -112,7 +112,7 @@ def browser_check(name, executable, base, output):
             page.locator('input[name=title]').fill(title)
             page.locator('textarea[name=description]').fill('Created by a fresh browser profile')
             page.locator('select[name=category]').select_option('Hardware')
-            page.locator('form[action="/tickets/new"] button').click()
+            page.locator('form[action="/tickets/new"] button:not([formaction])').click()
             page.wait_for_url(re.compile(re.escape(base) + r'/tickets/\d+$'))
             assert title in page.locator('h2').inner_text(), 'Created ticket title was not displayed'
             assert page.get_by_text('Open', exact=True).count() > 0

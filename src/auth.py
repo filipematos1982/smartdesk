@@ -29,6 +29,7 @@ def current(request, db):
                      (user_id,)).fetchone() if user_id else None
     if row is None:
         raise HTTPException(401, "É necessário iniciar sessão.")
+    request.state.actor_role = row["role"]
     return dict(row)
 
 def require(user, role):
