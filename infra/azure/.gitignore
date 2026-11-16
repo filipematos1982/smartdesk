@@ -1,0 +1,12 @@
+# Terraform providers, plans, state and private variable values are never committed.
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.tfvars
+*.tfvars.json
+backend.*.hcl
+!backend.example.hcl
+!example.tfvars
+crash.log
+crash.*.log

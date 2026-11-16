@@ -95,7 +95,7 @@ Session 3 follows the confirmed training outline and the public instructor imple
 - **Session 2:** bootstrap, web authentication/CSRF/throttling, HTTP/SQLite regression checks, and container hardening. Automated success alone does not certify a running Docker deployment.
 - **Session 3:** ticket concurrency, PostgreSQL transactions/persistence/recovery, isolated database validation, and local Kubernetes/k3s. Existing data and volumes must be preserved.
 - **Session 4:** full automated-test inventory, fresh reports, required PostgreSQL CI gate, pinned Python dependencies, and local browser/performance validation where supported. See the Session 4 records below for actual results and runtime blockers.
-- **Session 5:** instructor-confirmed Azure preparation, actual regional pricing, networking/TLS/identity/monitoring/rollback, and separately authorized deployment.
+- **Session 5:** local Azure preparation, current official EUR pricing, networking/TLS/identity/monitoring/rollback proposals, and explicit approval boundaries. Instructor-specific Azure requirements remain unconfirmed.
 
 Public exposure remains unapproved. Session 2 alone does not establish PostgreSQL acceptance, concurrency remediation, recovery, proxy configuration, distributed throttling, or cloud readiness. Session 3 evidence is recorded separately. No `/health` endpoint or new MVP feature is introduced here.
 
@@ -131,3 +131,14 @@ env -i PATH=/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin \
 This host command has no approved PostgreSQL target and must report PostgreSQL skips. `--require-postgres` makes absent or skipped PostgreSQL integration a failure. Do not point it at an existing application database. Real browser/performance commands and their declared measurement conditions are recorded separately in the validation record.
 
 Before any separately approved registry delivery, confirm the personal Docker Hub namespace, build platform, source commit, successful mandatory gates and image contents, then publish only with explicit authorization and verify the remote digest. Prepare the deployment with that immutable registry reference and confirmed target-cluster identity. The existing `k8s/` manifests and local k3s harness remain preparation inputs; no external deployment or registry publication is part of Session 4. Azure resource creation and deployment require separate authorization.
+
+
+## Session 5 Azure preparation
+
+The proposed training architecture uses Azure Container Apps Consumption, ACR Basic and PostgreSQL Flexible Server 16 with private database networking. Managed identity supplies narrowly scoped registry/secret access; Key Vault references keep runtime secrets out of committed configuration. HTTPS terminates at internal application ingress. The initial design exposes no public application endpoint and creates no AKS cluster. An instructor requirement for AKS has not been established.
+
+See the [architecture and prerequisites](docs/arquitetura/07_session_5_azure.md), [deployment/verification/rollback runbook](docs/arquitetura/08_session_5_runbook.md), [current EUR cost assumptions](docs/arquitetura/09_session_5_costs.md), and [preparation validation record](docs/qualidade/07_session_5_preparation.md). Draft templates are under `infra/azure/`; local preparation tools are under `scripts/azure/`. Local validation does not establish Azure deployment success, subscription permissions, quota, TLS handshake, image compatibility, managed-identity access or private network connectivity.
+
+West Europe is a proposed region, pending approval. The 730-hour model estimates EUR 46.29/month for a small scale-to-zero workload or EUR 70.51/month with continuous active app compute, before VAT and documented exclusions. Managed load-balancer and egress-IP charges are included. These estimates assume no free credits/grants and are not a spending cap or binding offer.
+
+Azure CLI is not currently installed. Do not authenticate, inspect an account/subscription, run a cloud plan/what-if, create resources, publish an image, expose the application, or deploy from this preparation. The current shared Docker environment remains off limits. A future deployment needs explicit personal-account/region/budget approval, a dedicated image/PostgreSQL/Jenkins validation environment, protected Terraform state, private administrative access, reviewed secrets and database bootstrap, an immutable tested image digest, and separate approval of the exact infrastructure plan. Public publication requires another security/ingress review and authorization. Cleanup remains a reviewed procedure; no database, backup or resource deletion is authorized.
