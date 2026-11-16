@@ -18,7 +18,7 @@ T_RE = re.compile(r"(?<![A-Za-z0-9])t(\d{2})(?!\d)", re.I)
 
 def parse(path):
     if not path.exists():
-        return [], "XML ausente"
+        return [], "JUnit XML is missing"
     try:
         root = ET.parse(path).getroot()
         cases = []
@@ -34,6 +34,8 @@ def parse(path):
                 status = "aprovado"
             cases.append((element.get("classname", ""), name, status,
                           element.get("time", "0")))
+        if not cases:
+            return [], "JUnit XML contains no test cases"
         return cases, None
     except (ET.ParseError, OSError) as exc:
         return [], str(exc)
@@ -41,10 +43,10 @@ def parse(path):
 def cell(status):
     return f'<span class="status" style="color:{COLORS[status]}">{escape(status)}</span>'
 
-def generate(folder, exit_codes=None):
+def generate(folder, exit_codes=None, suite_names=SUITES):
     exit_codes = exit_codes or {}
     all_cases, rows = [], []
-    for suite in SUITES:
+    for suite in suite_names:
         cases, problem = parse(folder / suite / "junit.xml")
         all_cases.extend((suite, *case) for case in cases)
         counts = Counter(case[2] for case in cases)

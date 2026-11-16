@@ -1,0 +1,4 @@
+# Optional host acceptance and coverage tools; install only in a new isolated environment.
+-r requirements.lock
+playwright==1.65.2
+coverage==7.17.3

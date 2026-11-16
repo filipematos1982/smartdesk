@@ -9,8 +9,9 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 
 # Retain test dependencies for the current local validation scripts.
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements.txt requirements.lock ./
+# Install the reviewed Python 3.12 resolution rather than resolve version ranges.
+RUN pip install --no-cache-dir -r requirements.lock
 
 # Use a stable, unprivileged identity and a writable report directory.
 RUN groupadd --gid 10001 smartdesk \

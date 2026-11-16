@@ -3,6 +3,7 @@
 !Dockerfile
 !.dockerignore
 !requirements.txt
+!requirements.lock
 !src/
 !src/**
 !scripts/

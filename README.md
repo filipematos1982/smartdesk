@@ -94,7 +94,40 @@ Session 3 follows the confirmed training outline and the public instructor imple
 - **Session 1:** approved requirements and Gherkin remain unchanged.
 - **Session 2:** bootstrap, web authentication/CSRF/throttling, HTTP/SQLite regression checks, and container hardening. Automated success alone does not certify a running Docker deployment.
 - **Session 3:** ticket concurrency, PostgreSQL transactions/persistence/recovery, isolated database validation, and local Kubernetes/k3s. Existing data and volumes must be preserved.
-- **Session 4:** expanded PostgreSQL/security coverage, real browser/performance acceptance, reliable reports, Jenkins gates, and reproducible image delivery.
+- **Session 4:** full automated-test inventory, fresh reports, required PostgreSQL CI gate, pinned Python dependencies, and local browser/performance validation where supported. See the Session 4 records below for actual results and runtime blockers.
 - **Session 5:** instructor-confirmed Azure preparation, actual regional pricing, networking/TLS/identity/monitoring/rollback, and separately authorized deployment.
 
 Public exposure remains unapproved. Session 2 alone does not establish PostgreSQL acceptance, concurrency remediation, recovery, proxy configuration, distributed throttling, or cloud readiness. Session 3 evidence is recorded separately. No `/health` endpoint or new MVP feature is introduced here.
+
+
+## Session 4 local CI and delivery preparation
+
+The [Session 4 reference](docs/arquitetura/06_session_4_reference.md) separates the authorized scope from unavailable instructor requirements. The [validation record](docs/qualidade/06_session_4_validation.md) records actual commands, counts, failures and unexecuted checks. Session 3 evidence does not substitute for validation of the changed Session 4 image.
+
+`requirements.txt` records dependency ranges; `requirements.lock` records the complete Python 3.12 resolution used for this session. Docker installs the lock. The lock does not pin the base image or supply package hashes; Linux installation, image architecture and image runtime require their own successful checks.
+
+Docker runtime validation is currently blocked because the available Docker environment is shared with unrelated/company projects. Do not run the runtime command below in that environment. A separately approved dedicated personal Docker environment is required.
+
+After explicit local authorization, a dedicated personal Jenkins agent can run the reviewed `Jenkinsfile`. Configure its `smartdesk-personal-local` label, public personal SCM URL without credentials, Python 3, Git, Docker CLI/daemon and an explicit local Unix socket. The `LOCAL_DOCKER_HOST` build parameter defaults to `unix:///var/run/docker.sock`; a dedicated macOS agent needs its approved personal Docker Desktop socket instead. Never attach this job to a company agent or use an ambient remote Docker context.
+
+The equivalent local infrastructure command is:
+
+```bash
+sh scripts/session4_ci.sh --approve-local-ci \
+  --docker-host unix:///Users/filipematos/.docker/run/docker.sock \
+  --output-dir reports/session4-ci-UNIQUE-RUN-ID
+```
+
+Choose a new output directory each time. The helper uses an empty Docker configuration, builds a unique local image, creates a labelled internal network and new tmpfs PostgreSQL target, verifies its identity, and runs tests as UID/GID 10001 with PostgreSQL required. It stops only containers whose recorded IDs and labels still match, and retains resources and private diagnostics. It never publishes images or applies deployments. A failed or skipped required PostgreSQL gate must prevent a successful CI result. Only fresh copied test artifacts are archived; generated database credentials and Docker state stay private and ignored.
+
+A host regression run can use an isolated Python environment and the report runner:
+
+```bash
+env -i PATH=/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin \
+  PYTHONDONTWRITEBYTECODE=1 /path/to/isolated/python \
+  -m scripts.run_validation --output-dir reports/session4-tests-UNIQUE-RUN-ID
+```
+
+This host command has no approved PostgreSQL target and must report PostgreSQL skips. `--require-postgres` makes absent or skipped PostgreSQL integration a failure. Do not point it at an existing application database. Real browser/performance commands and their declared measurement conditions are recorded separately in the validation record.
+
+Before any separately approved registry delivery, confirm the personal Docker Hub namespace, build platform, source commit, successful mandatory gates and image contents, then publish only with explicit authorization and verify the remote digest. Prepare the deployment with that immutable registry reference and confirmed target-cluster identity. The existing `k8s/` manifests and local k3s harness remain preparation inputs; no external deployment or registry publication is part of Session 4. Azure resource creation and deployment require separate authorization.
